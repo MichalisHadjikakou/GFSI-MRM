@@ -1,7 +1,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7710503.svg)](https://doi.org/10.5281/zenodo.7710503)
 ![GitHub](https://img.shields.io/github/license/MichalisHadjikakou/GFSI-MRM)
 
-# Global Food System Intervention Meta-Regression Model <br> (GFSI-MRM)
+# Global Food System Intervention Meta-Regression <br> Model (GFSI-MRM)
 
 ## Abstract
 
