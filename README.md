@@ -1,9 +1,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7710503.svg)](https://doi.org/10.5281/zenodo.7710503)
 ![GitHub](https://img.shields.io/github/license/MichalisHadjikakou/GFSI-MRM)
 
-# GFSI-MRM
- Global Food System Intervention Meta-Regression Model (GFSI-MRM)
-# Mitigating risk of exceeding environmental limits requires ambitious food system interventions
+# Global Food System Intervention Meta-Regression Model <br> (GFSI-MRM)
 
 ## Abstract
 
@@ -11,7 +9,7 @@ Transforming the global food system is necessary to avoid exceeding planetary bo
 
 ## Description
 
-This repository provides the underlying code to reproduce the analysis for the manuscript titled "Mitigating risk of exceeding environmental limits requires ambitious food system interventions", currently under review. 
+This repository provides the underlying code to reproduce the analysis for the manuscript titled **_Mitigating risk of exceeding environmental limits requires ambitious food system interventions_**, currently under review. 
 
 ## Getting Started
 
@@ -67,7 +65,7 @@ This script uses the integrated dataset produced by 6.0a to filter the scenarios
 
 ## License
 
-This project is licensed under the [GPL-3.0] License - see the LICENSE.md file for details
+This project is licensed under the [GPL-3.0] License - see the LICENSE.md file for details.
 
 ## Acknowledgments
 
