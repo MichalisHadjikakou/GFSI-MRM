@@ -15,8 +15,8 @@ This repository provides the underlying code to reproduce the analysis for the m
 The following R packages are used in this repository:
 
 * pacman (package installation and updating)
-* tidyverse, cowplot, viridis (data wrangling and visualisation)
-* car, lme4, merTools, propagate, fitdistrplus, performance, LMERConvenienceFunctions, cvms, ggeffects, DHARMa, sjPlot, lmerTest, predictmeans (statistical testing, analysis, and cross-validation)
+* tidyverse, cowplot, viridis, RColorBrewer (data wrangling and visualisation)
+* car, lme4, merTools, propagate, extraDistr, fitdistrplus, performance, LMERConvenienceFunctions, cvms, ggeffects, DHARMa, sjPlot, lmerTest, predictmeans (statistical testing, analysis, and cross-validation)
 * readxl, writexl, data.table (read and write files)
 * future.apply (parallel computing)
 * wppExplorer, wpp2019 (population projections)
