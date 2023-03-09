@@ -2,6 +2,8 @@
  Global Food System Intervention Meta-Regression Model (GFSI-MRM)
 # Mitigating risk of exceeding environmental limits requires ambitious food system interventions
 
+## Abstract
+
 Transforming the global food system is necessary to avoid exceeding planetary boundaries. A robust evidence base is crucial to assess the scale and combination of interventions required for a sustainable transformation. We developed a risk assessment framework, underpinned by a meta-regression of 60 global food system modeling studies, to quantify the potential of individual and combined interventions to mitigate the risk of exceeding the boundaries for land-system change, freshwater use, climate change, and biogeochemical flows by 2050. Limiting the risk of exceedance across four key planetary boundaries requires a high but plausible level of ambition in all demand-side (diet, population, waste) and most supply-side interventions. Attaining the required level of ambition for all interventions relies on embracing synergistic actions across the food system. 
 
 ## Description
