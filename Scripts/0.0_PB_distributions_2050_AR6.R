@@ -37,7 +37,7 @@ if(PC=='work_laptop') {
 } else if (PC =='analytix') {
   setwd("C:/Users/hadj/OD/Michalis_Brett/Future_food_systems_review/")
 } else {
-  setwd("//school-les-m.shares.deakin.edu.au/school-les-m/Planet-A/Food-Systems/Meta_analysis/GFSS-MM/")  
+  setwd("//school-les-m.shares.deakin.edu.au/school-les-m/Planet-A/Food-Systems/Meta_analysis/GFSI-MRM/GFSI-MRM/")  
 }
 
 # 2.1 Initialising empty dataframe with limits across all relevant indicators (for sub-indicators of GHG emissions see - 'GHG_distributions_2050_CH4_N2O_CO2_1_5+2_0C.R')

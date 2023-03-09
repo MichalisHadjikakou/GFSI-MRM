@@ -20,7 +20,7 @@ if(PC=='work_laptop') {
 } else if (PC =='analytix') {
   setwd("N:/Future_food_systems_review/GFSS-MM/")
 } else {
-  setwd("//school-les-m.shares.deakin.edu.au/school-les-m/Planet-A/Food-Systems/Meta_analysis/GFSS-MM/")  
+  setwd("//school-les-m.shares.deakin.edu.au/school-les-m/Planet-A/Food-Systems/Meta_analysis/GFSI-MRM/GFSI-MRM/")  
 }
 
 sim_date <- "2023-02-07" # Date of simulation - Change this depending on file being read

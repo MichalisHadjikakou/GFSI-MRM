@@ -24,7 +24,7 @@ if(PC=='work_laptop') {
 } else if (PC =='analytix') {
   setwd("M:/Current-Users/Michalis-Hadjikakou/Food_Meta_Analysis_Enayat/Notebook/")
 } else {
-  setwd("//school-les-m.shares.deakin.edu.au/school-les-m/Planet-A/Food-Systems/Meta_analysis/GFSS-MM/Outputs/Pareto_analysis+plots/")  
+  setwd("//school-les-m.shares.deakin.edu.au/school-les-m/Planet-A/Food-Systems/Meta_analysis/GFSI-MRM/GFSI-MRM/Outputs/Pareto_analysis+plots/")  
 }
 
 # If there is a penalty read the penalty file

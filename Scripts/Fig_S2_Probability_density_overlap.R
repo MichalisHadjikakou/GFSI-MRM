@@ -1,7 +1,7 @@
 ##### Calculating area of overlapping density #####
 
 ## 1.0 Setting up script
-
+PC <- "denethor"
 sim_date <- "2022-12-07" # Date of simulation
 today <- Sys.Date() # Today's date
 unit_conv <- 100 # Passing from Mkm2 to Mha
@@ -11,7 +11,7 @@ if(PC=='work_laptop') {
 } else if (PC =='analytix') {
   setwd("M:/Food-Systems/Meta_analysis/")
 } else if (PC =='denethor') {
-  setwd("//school-les-m.shares.deakin.edu.au/school-les-m/Planet-A/Food-Systems/Meta_analysis/GFSS-MM/")
+  setwd("//school-les-m.shares.deakin.edu.au/school-les-m/Planet-A/Food-Systems/Meta_analysis/GFSI-MRM/GFSI-MRM/")
 } else {
   setwd("C:/Users/Michalis/OneDrive - Deakin University/Michalis_Brett/Future_food_systems_review/Meta_analysis/GFSS-MM/")  
 }

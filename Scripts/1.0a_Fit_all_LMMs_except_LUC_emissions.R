@@ -36,12 +36,10 @@ Nimp = 10 # Number of imputed datasets
 n <- 10000 # Number of random draws for distributions/simulations
 set.seed(123) # Ensures reproducibility of bootstrap results
 
-if(PC=='work_laptop') {
-  setwd("C:/Users/Hadj/OneDrive - Deakin University/Michalis_Brett/Future_food_systems_review/Meta_analysis/GFSS-MM/")
-} else if (PC =='analytix') {
-  setwd("M:/Food-Systems/Meta_analysis/")
+if(PC =='analytix') {
+  setwd("M:/Food-Systems/Meta_analysis/GFSI-MRM/GFSI-MRM/")
 } else if (PC =='denethor') {
-  setwd("//school-les-m.shares.deakin.edu.au/school-les-m/Planet-A/Food-Systems/Meta_analysis/GFSS-MM/")
+  setwd("//school-les-m.shares.deakin.edu.au/school-les-m/Planet-A/Food-Systems/Meta_analysis/GFSI-MRM/GFSI-MRM/")
 } else {
   setwd("C:/Users/Michalis/OneDrive - Deakin University/Michalis_Brett/Future_food_systems_review/Meta_analysis/GFSS-MM/")  
 }

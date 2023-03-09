@@ -30,7 +30,7 @@ if(PC=='work_laptop') {
 } else if (PC =='analytix') {
   setwd("N:/Future_food_systems_review/GFSS-MM/")
 } else {
-  setwd("//school-les-m.shares.deakin.edu.au/school-les-m/Planet-A/Food-Systems/Meta_analysis/GFSS-MM/")  
+  setwd("//school-les-m.shares.deakin.edu.au/school-les-m/Planet-A/Food-Systems/Meta_analysis/GFSI-MRM/GFSI-MRM/")  
 }
 
 capFirst <- function(s) { # Capitalise first letter
