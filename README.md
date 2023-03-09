@@ -58,7 +58,7 @@ This Jupyter notebook merges all risk results for each planetary boundary into o
 
 * 6.0b_Figure_3_Risk_compliant_combinations.R
 
-This script uses the integrated dataset produced by 6.0a to filter the scenarios that meet two critical [IPCC-calibrated uncertainty risk thresholds] (https://www.ipcc.ch/site/assets/uploads/2018/05/uncertainty-guidance-note.pdf) across all boundaries: < 0.50 risk (exceedance about as unlikely as not) and < 0.33 risk (exceedance unlikely) and categorizes them in terms of the type and level of each intervention required to achieve each threshold (see Figure 3 in the [manuscript]).
+This script uses the integrated dataset produced by 6.0a to filter the scenarios that meet two critical [IPCC-calibrated uncertainty risk thresholds](https://www.ipcc.ch/site/assets/uploads/2018/05/uncertainty-guidance-note.pdf) across all boundaries: < 0.50 risk (exceedance about as unlikely as not) and < 0.33 risk (exceedance unlikely) and categorizes them in terms of the type and level of each intervention required to achieve each threshold (see Figure 3 in the [manuscript]).
 
 ## License
 
