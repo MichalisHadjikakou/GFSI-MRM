@@ -25,38 +25,38 @@ For each script, required packages are installed through the p_load command from
 
 ### Description of main scripts
 
-* 0.0_PB_distributions_2050_AR6.R
+* **_0.0_PB_distributions_2050_AR6.R_**
 
 This script draws on published literature and databases to produce 2050 distributions for agriculture-specific environmental limits related to the [planetary boundaries](https://www.science.org/doi/10.1126/science.1259855) of land-system change, climate change, freshwater use and biogeochemical flows.
 
-* 1.0a_Fit_all_LMMs_except_LUC_emissions.R 
-* 1.0b_Fit_LUC_emissions_model_AR6
+* **_1.0a_Fit_all_LMMs_except_LUC_emissions.R_** 
+* **_1.0b_Fit_LUC_emissions_model_AR6_**
 
 These scripts fit linear mixed-effects meta-regression models and perform cross-validation for each of the 10 environmental indicators (cropland, pasture, methane, nitrous oxide, carbon dioxide associated with land-use change, blue water consumption, nitrogen fertiliser, nitrogen surplus, phosphorus fertiliser, phosphorus surplus)  used in the analysis.  
 
-* 2.0_Predict_scenario.R
+* **_2.0_Predict_scenario.R_**
 
 This script uses the fitted models from 1.0a and 1.0b to generate 2050 predictions and prediction intervals for a broad range of future intervention levels and all their combinations. 
 
-* 3.0_Risk_calculation_across_PBs.R
+* **_3.0_Risk_calculation_across_PBs.R_**
 
 This script uses the predictions from 2.0 and the distributions in 0.0 to estimate exceedance risk for each intervention level combination across all planetary boundaries. 
 
-* 4.0a_Risk_averages_Figure_2_dataset.R
-* 5.0a_Figure_2_Composite_barplots_ggplot_version.R
+* **_4.0a_Risk_averages_Figure_2_dataset.R_**
+* **_5.0a_Figure_2_Composite_barplots_ggplot_version.R_**
 
 These scripts generate the composite barplot panel (see Figure 2 in the [manuscript]) of mean and SD exceedance risk across different intervention levels. 
 
-* 4.0b_Indicator_averages_physical_units_SM.R
-* 5.0b_Indicator_composite_barplots_SM.R
+* **_4.0b_Indicator_averages_physical_units_SM.R_**
+* **_5.0b_Indicator_composite_barplots_SM.R_**
 
 These scripts generate the composite barplot panel (see Figure 2 in the [manuscript]) of mean and SD expressed in physical units, with the option of absolute or relative units. 
 
-* 6.0a_Tradeoff_analysis.ipynb
+* **_6.0a_Tradeoff_analysis.ipynb_**
 
 This Jupyter notebook merges all risk results for each planetary boundary into one integrated dataset based on matching intervention levels across all the common interventions (available across all the indicator statistical models): population, diet change (animal and plant calories), waste reduction, crop yields, feed efficiency (FCR), and feed composition. It then performs pareto (trade-off) analysis betweenn risk mitigation and intervention ambition levels.   
 
-* 6.0b_Figure_3_Risk_compliant_combinations.R
+* **_6.0b_Figure_3_Risk_compliant_combinations.R_**
 
 This script uses the integrated dataset produced by 6.0a to filter the scenarios that meet two critical [IPCC-calibrated uncertainty risk thresholds](https://www.ipcc.ch/site/assets/uploads/2018/05/uncertainty-guidance-note.pdf) across all boundaries: < 0.50 risk (exceedance about as unlikely as not) and < 0.33 risk (exceedance unlikely) and categorizes them in terms of the type and level of each intervention required to achieve each threshold (see Figure 3 in the [manuscript]).
 
@@ -66,4 +66,4 @@ This project is licensed under the [GPL-3.0] License - see the LICENSE.md file f
 
 ## Acknowledgments
 
-We would like to acknowledge the authors of all the [excellent packages](https://github.com/MichalisHadjikakou/GFSI-MRM/edit/main/README.md#dependencies) that have enabled this work.
+We would like to acknowledge the authors of all the excellent packages (see [Dependencies](#dependencies)) that have enabled this work.
