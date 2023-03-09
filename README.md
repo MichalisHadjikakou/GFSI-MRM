@@ -66,4 +66,4 @@ This project is licensed under the [GPL-3.0] License - see the LICENSE.md file f
 
 ## Acknowledgments
 
-We would like to acknowledge the authors of all the excellent packages (listed above) that have enabled this work.
+We would like to acknowledge the authors of all the [excellent packages](https://github.com/MichalisHadjikakou/GFSI-MRM/edit/main/README.md#dependencies) that have enabled this work.
