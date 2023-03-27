@@ -70,7 +70,7 @@ if(grepl(base_year_norm,final_variables[3])){ # If base_year norm is present the
 
 cowplot::plot_grid(plotlist = list_fix_slopes,nrow=3,ncol=3)
 
-ggsave(filename = paste0("Outputs/Meta-regression/LMM_diagnostics/Fixed_effects/Predictions_",ind[i],model_specs[j],".pdf"), width = 8, height = 8, device='pdf', dpi=700)
+ggsave(filename = paste0("Outputs/Meta-regression/LMM_diagnostics/Fixed_effects/Predictions_",ind[i],model_specs[j],".pdf"), width = 8, height = 8, device='pdf', dpi=300)
 
 
 # Further visualising random and fixed effects

@@ -14,7 +14,8 @@ model_par <- function(ind){
   list_var[[2]][[1]] <- c("Population","Rum_meat_kcal","Dairy_kcal","FCR_FCF_rum_meat","FCR_FCF_dairy","C_price")
   list_var[[2]][[2]] <- c("Rum_meat_kcal_pop","Dairy_kcal_pop","FCR_grass_rum_meat","FCR_grass_dairy","FCR_grass_mon",
                           "C_price")
-  list_var[[2]][[3]] <- c("Rum_meat_grass_feed","Dairy_grass_feed")#,"C_price") # Chosen model - will benefit from more data n.removed = 9 percent.removed = 2.564103 
+  #list_var[[2]][[3]] <- c("Rum_meat_grass_feed","Dairy_grass_feed")#,"C_price") # Chosen model - will benefit from more data n.removed = 9 percent.removed = 2.564103 
+  list_var[[2]][[3]] <- c("Rum_feed_grass")
   
   # Water - Process-based the best option for Water - with trimmed residuals (n.removed=17, %removed 2.32)
   list_var[[3]][[1]] <- c("Population","Rum_meat_kcal","Non_rum_kcal","Dairy_kcal",
@@ -43,10 +44,9 @@ model_par <- function(ind){
                           "Vegetal_kcal","FCR_FCF_rum_meat","FCR_FCF_dairy","FCR_FCF_monogastrics","Yield","GHG_eff_N2O","Organic")
   list_var[[5]][[2]] <- c("Population","Rum_kcal_FCR","Non_rum_kcal_FCR","Dairy_kcal_FCR","Yield",
                           "Vegetal_kcal","GHG_eff_N2O","Organic")
-  list_var[[5]][[3]] <- c("Rum_feed_grass",
+  list_var[[5]][[3]] <- c(#"Rum_meat_kcal_GHG","Dairy_kcal_GHG",#"Non_rum_kcal_GHG",
+                          "Rum_feed_grass",
                           "All_feed_water",
-                          #"Rum_feed_water",
-                          #"Mon_feed_water",
                           "Plant_kcal_GHG",
                           "Yield","GHG_eff_N2O","Organic") # Chosen model (1+Yield/Model) with one residual trim and without excluding any studies, n.removed = 17 
   #percent.removed = 2.746365 
@@ -59,16 +59,19 @@ model_par <- function(ind){
                           "Vegetal_kcal","Yield","FCR_FCF_ruminants","FCR_FCF_monogastrics","Organic","NUEinc","NrecHousehold") # Yield adjustments already encompass organic production
   list_var[[6]][[2]] <- c("Population","Rum_meat_kcal_FCR_FCF","Non_rum_kcal_FCR_FCF","Dairy_kcal_FCR_FCF",
                           "Vegetal_kcal","Yield","NUEinc","NrecHousehold","Organic")
-  list_var[[6]][[3]] <- c("Rum_feed_water","Mon_feed_water","Plant_food_water", # Collapsed all ruminant feed to one predictor to prevent colinearity
-                          "Yield","NUEinc","NrecHousehold")# C_price not significant  - chosen model (not trimming of residuals)
+  #list_var[[6]][[3]] <- c("Rum_feed_water","Mon_feed_water","Plant_food_water", # Collapsed all ruminant feed to one predictor to prevent colinearity
+  #                        "Yield","NUEinc","NrecHousehold")# C_price not significant  - chosen model (not trimming of residuals)
+  list_var[[6]][[3]] <- c("Rum_feed_water","Mon_feed_water",
+                          "Plant_food_water", # Collapsed all ruminant feed to one predictor to prevent colinearity
+                          "Yield","NUEinc","NrecHousehold")# N recycling not considered in many models
   
   # Nitrogen surplus - PB 
   list_var[[7]][[1]] <- c("Population","Rum_meat_kcal","Non_rum_kcal","Dairy_kcal",
                           "Vegetal_kcal","Yield","FCR_FCF_ruminants","FCR_FCF_monogastrics","NUEinc","NrecHousehold") # Yield adjustments already encompass organic production
   list_var[[7]][[2]] <- c("Population","Rum_meat_kcal_FCR_FCF","Non_rum_kcal_FCR_FCF","Dairy_kcal_FCR_FCF",
                           "Vegetal_kcal","Yield","NUEinc","NrecHousehold")
-  list_var[[7]][[3]] <- c("Rum_feed_water","Mon_feed_water","Plant_food_water",#"Rum_feed_grass",
-                          "Yield","NUEinc","NrecHousehold")# C_price not significant #n.removed = 13 percent.removed = 2.439024 
+  list_var[[7]][[3]] <- c("Rum_feed_all","Mon_feed_water","Plant_food_water",#"Rum_feed_grass causes serious co-linearity issues
+                          "Yield","NUEinc")# Adding grass feed to capture surplus from manure and fertriliser applied to grasslands
   
   # Phosphorus fertiliser - PB
   list_var[[8]][[1]] <- c("Population","Rum_meat_kcal","Non_rum_kcal","Dairy_kcal", # Significant colinearity between Yield and population (VIF>10)
@@ -76,15 +79,16 @@ model_par <- function(ind){
   list_var[[8]][[2]] <- c("Population","Rum_meat_kcal_FCR_FCF","Non_rum_kcal_FCR_FCF","Dairy_kcal_FCR_FCF",
                            "Vegetal_kcal","Yield","PUEinc","PrecHousehold")
   list_var[[8]][[3]] <- c("All_feed_water","Plant_food_water","Yield", # Colinearity remains but does not pose problems - residuals OK - no trimming
-                          "PUEinc","PrecHousehold")# C_price not significant
+                          "PUEinc","PrecHousehold") # Aggregated feed due to low sample size and colinearity
   
   # Phosphorus surplus - PB
   list_var[[9]][[1]] <- c("Population","Rum_meat_kcal","Non_rum_kcal","Dairy_kcal",
                            "Vegetal_kcal","Yield","FCR_FCF_ruminants","FCR_FCF_monogastrics","Organic","PUEinc","PrecHousehold") # Yield adjustments already encompass organic production
   list_var[[9]][[2]] <- c("Population","Rum_meat_kcal_FCR_FCF","Non_rum_kcal_FCR_FCF","Dairy_kcal_FCR_FCF",
                            "Vegetal_kcal","Yield","PUEinc","PrecHousehold","Organic")
-  list_var[[9]][[3]] <- c("All_feed_water","Plant_food_water","Yield",#"Organic","Rum_feed_grass",
-                           "PUEinc")# PrecHousehold not significant
+  list_var[[9]][[3]] <- c("Rum_feed_grass","All_feed_water","Plant_food_water",
+                          "Yield","PUEinc") # Adding grass feed to capture surplus from manure and fertriliser applied to grasslands
+  
 
   return(list_var)
 

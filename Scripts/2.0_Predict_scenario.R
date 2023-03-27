@@ -27,7 +27,7 @@ if(PC=='work_laptop') {
 n <- 10000 # Number of random draws for distributions/simulations
 Nsim = 2000 # Number of bootstraps
 set.seed(123) # Ensures reproducibility of bootstrap results
-simdate <- "2023-02-05"
+simdate <- "2023-03-21"
 today <- Sys.Date() # Today's date
 
 # Prediction parameters

@@ -23,7 +23,7 @@ if(PC=='work_laptop') {
   setwd("//school-les-m.shares.deakin.edu.au/school-les-m/Planet-A/Food-Systems/Meta_analysis/GFSI-MRM/GFSI-MRM/")  
 }
 
-sim_date <- "2023-02-07" # Date of simulation - Change this depending on file being read
+sim_date <- "2023-03-21" # Date of simulation - Change this depending on file being read
 
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(tidyverse,RColorBrewer,Hmisc,extraDistr,formattable,future.apply,svMisc,wppExplorer,wpp2019,readxl)

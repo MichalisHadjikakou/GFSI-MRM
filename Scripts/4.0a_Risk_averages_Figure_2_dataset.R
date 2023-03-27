@@ -17,7 +17,7 @@ rm(list = ls())
 PC <- 'denethor'
 write_results <- 'yes'
 n <- 10000 # Number of random draws for distributions/simulations
-sim_date <- "2023-02-07" # Date of simulation
+sim_date <- "2023-03-21" # Date of simulation
 today <- Sys.Date() # Today's date
 Base_year <- 2010
 Scen_year <- 2050

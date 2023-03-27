@@ -113,7 +113,7 @@ scenario_types <- c("BAU","EFF","DIET","MIXED","OTHER") # Major scenario types
 # Creating empty list of data.frames for saving result
 model_specs <- c("All","Hybrid","Process-based") # Alternative model specifications
 
-val_metrics <- c("RMSE","AIC","AICc","r2m","r2c")
+val_metrics <- c("RMSE","NRMSE(RNG)","AIC","AICc","r2m","r2c")
 CV_reps <- 5 # How many times to repeat cross-validation
 
 CV_result_mat <- matrix(NA,1,length(val_metrics)) %>% 
@@ -144,7 +144,7 @@ if(scale_predictors=="yes"){ # If user decides to model change instead of absolu
   }
 
 #Key predictors vector - Key predictors for plotting against each indicator (can be modified)
-key_preds <- c("Yield","Rum_meat_grass_feed","WPinc","Rum_meat_kcal_GHG","Yield","NUEinc","NUEinc","PUEinc","PUEinc")
+key_preds <- c("Yield","Rum_feed_grass","WPinc","Rum_meat_kcal_GHG","Yield","NUEinc","NUEinc","PUEinc","PUEinc")
 key_preds_string <- c("Crop yields","Ruminant grass feed","Water use efficiency","Ruminant meat","Crop yields",
                       "Nitrogen use efficiency","Nitrogen use efficiency",
                       "Phosphorus use efficiency","Phoshorus use efficiency")
@@ -152,19 +152,21 @@ key_preds_string <- c("Crop yields","Ruminant grass feed","Water use efficiency"
 ## 2.2 Setting up multi-core analysis
 
 #plan(multiprocess, workers = length(list_par)) # Can change this accordingly (If 2010, use crop_num)
-# 
-# test_list <- lapply(1:4, function(i) { # Loop across each indicator
+
+#i <- x
+i <- 2# Indicator selection -for testing
+j <- 3 # LMM model-type for testing (default=3)
+
+# sapply(seq_along(ind), function(i) { # Loop across each indicator
 #   lapply(1:3, function(j) { # Loop across each regression equation
 
-
-  i <- 4# Indicator selection -for testing
-  j <- 3 # LMM model-type for testing (default=3)
-  
   if(i==2){
     effect_size="delta (%)"
+  } else {
+    effect_size <- 'lnR'# Whether the difference from the baseline/BAU should be a multiplier or absolute difference
   }
   
-  ## 2.1  Create a list with dataframes for each selected indicator (within each PB system) 
+## 2.1  Create a list with dataframes for each selected indicator (within each PB system) 
   
   df_stat <- DF[!is.na(DF[,ind[i]]),] %>% #%>% filter(Scenario.year..numeric.==2050)# filtering only rows that have indicator values 
     #filter(ScenYear<2051) %>% # Only consider data up to 2050 (reduces sample size but tightens the study scope)
@@ -178,7 +180,7 @@ key_preds_string <- c("Crop yields","Ruminant grass feed","Water use efficiency"
   
  # Trimming outliers and cleaning up
   source("Functions/Study_selection.R")
-  df_stat <- select_studies(df_stat)
+  df_stat <- select_studies(df_stat,i)
   
   ## 2.2  Reformatting dataframe depending on mode of analysis (absolute numbers, absolute differences, log response ratio, relative differences)
   
@@ -274,6 +276,7 @@ key_preds_string <- c("Crop yields","Ruminant grass feed","Water use efficiency"
   #All_preds <- paste0(list_par[[i]][[j]])
   
   if(i==3|i==5){
+    #glmm_global <- lmer(paste0(ind[i]," ~ ",All_preds,"+ (1+Rum_feed_grass|Model)"),data=stat_df,REML=TRUE) # Testing for pasture
     
     glmm_global <- lmer(paste0(ind[i]," ~ ",All_preds,"+ (1+Yield|Model)"),data=stat_df,REML=TRUE)
     glmm_global_robust <- rlmer(paste0(ind[i]," ~ ",All_preds,"+ (1+Yield|Model)"),data=stat_df,REML=TRUE) # RobustLMM version (less sensitive to outliers, heteroscedasticity and heterogeneity of variance)
@@ -303,7 +306,7 @@ key_preds_string <- c("Crop yields","Ruminant grass feed","Water use efficiency"
   check_model(glmm_global)
   tab_model(glmm_global,glmm_global_robust)
   
-  ## 3.4 Checking alternative fixed effect structures through stepwise elimination
+  ## 3.4 Checking alternative fixed effect structures - stepwise elimination not used anymore since cross-validation was introduced
   # Dropping variables to see effect on AIC and LRT
   # 
   drop1(glmm_global,test="Chisq")
@@ -311,18 +314,18 @@ key_preds_string <- c("Crop yields","Ruminant grass feed","Water use efficiency"
   # Making exception for Cropland since the robust model shows that delta initial is significant
   # Pasture also shows monogastric feed having an influence because one model assumes free range eggs/chicken but reduces performance
   
-  if(i==1|i==3|i==5){
-    
-    alpha_fixed=0.3
-  
-  }else{
-  
-    alpha_fixed=0.2
-  }
-
-  glmm_global <- step(glmm_global,reduce.random = FALSE,alpha.fixed = alpha_fixed) %>% get_model() # Choosing model after inspecting drop1 results
-  write.csv(drop1(glmm_global,test="Chisq"),paste0("Outputs/Meta-regression/LMM_diagnostics/Drop1/Drop1",ind[i],model_specs[j],effect_size,currentDate,".csv"))
-  
+  # if(i==1|i==3|i==5){
+  #   
+  #   alpha_fixed=1
+  # 
+  # }else{
+  # 
+  #   alpha_fixed=0.2
+  # }
+  # 
+  # glmm_global <- step(glmm_global,reduce.random = FALSE,alpha.fixed = alpha_fixed) %>% get_model() # Choosing model after inspecting drop1 results
+  # write.csv(drop1(glmm_global,test="Chisq"),paste0("Outputs/Meta-regression/LMM_diagnostics/Drop1/Drop1",ind[i],model_specs[j],effect_size,currentDate,".csv"))
+  # 
   # Checking for colinearity
   VIF_glmm <- as.data.frame(vif(glmm_global))
   #VIF_glmm$`GVIF^(1/(2*Df))` <- VIF_glmm$`GVIF^(1/(2*Df))`^2 # Squaring last column as per: https://stats.stackexchange.com/questions/70679/which-variance-inflation-factor-should-i-be-using-textgvif-or-textgvif
@@ -373,10 +376,10 @@ key_preds_string <- c("Crop yields","Ruminant grass feed","Water use efficiency"
  
      
      # Trimming of residuals (if deemed necessary after looking at diagnostics)  
-     if (i %notin% c(9)){
+     #if (i %notin% c(9)){ # coefficients are identical with robust model and overall sample size is low
      
      
-       if (i==1|i==2){ # Carry this to minimise influence of extreme residuals based on rlmer results and overall sample size)
+       if (i==1|i==9){ # Carry this to minimise influence of extreme residuals based on rlmer results and overall sample size)
        
         threshold_trim <- 2.5
        
@@ -396,7 +399,7 @@ key_preds_string <- c("Crop yields","Ruminant grass feed","Water use efficiency"
          glmm_global <- lmer(formula(glmm_global),data=stat_df,REML=TRUE)
          #glmm_global_robust <- rlmer(paste0(ind[i]," ~ ",list_par[[i]][[j]],"+ (1|Model)"),data=stat_df,REML=TRUE) 
      
-     }   
+     #}   
        
      # Revisiting model diagnostics
      
@@ -446,11 +449,11 @@ key_preds_string <- c("Crop yields","Ruminant grass feed","Water use efficiency"
   #write.csv(Anova(glmm_global),paste0("GLMMs/ANOVA/Anova",ind[i],model_specs[j],effect_size,currentDate,".csv")) # Significance for fixed effects predictors
   #save.lmer.effects(glmm_global,file=paste0("GLMMs/ANOVA/",ind[i],model_specs[j],currentDate)) # Saving model specifications (includes r-squred for mixed models)
 
-  pdf(paste0("Outputs/Meta-regression/LMM_diagnostics/Residuals/",ind[i],model_specs[j],effect_size,"_","QQplotRES.pdf"))
+  pdf(paste0("Outputs/Meta-regression/LMM_diagnostics/Residuals/",ind[i],model_specs[j],"_",currentDate,"QQplotRES.pdf"))
   qqnorm(residuals(glmm_global),main = paste0("GLMMs/Normal Q-Q plot - ",ind[i],model_specs[j]))
   dev.off()
   # 
-  pdf(paste0("Outputs/Meta-regression/LMM_diagnostics/Residuals/",ind[i],model_specs[j],effect_size,"_","ScaledRES.pdf"))
+  pdf(paste0("Outputs/Meta-regression/LMM_diagnostics/Residuals/",ind[i],model_specs[j],"_",currentDate,"ScaledRES.pdf"))
   plot(glmm_global,main=paste0("GLMMs/",ind[i],model_specs[j], " - residuals"))
   dev.off()
   # 
@@ -464,14 +467,19 @@ key_preds_string <- c("Crop yields","Ruminant grass feed","Water use efficiency"
   
   list_CV[[i]][[j]][,1] <- ind[i]
   list_CV[[i]][[j]][,2] <- model_specs[j]
-  list_CV[[i]][[j]][,3]=CV_lmer_results$RMSE
-  list_CV[[i]][[j]][,4]=CV_lmer_results$AIC
-  list_CV[[i]][[j]][,5]=CV_lmer_results$AICc
-  list_CV[[i]][[j]][,6]=CV_lmer_results$r2m
-  list_CV[[i]][[j]][,7]=CV_lmer_results$r2c
+  list_CV[[i]][[j]][,3] <- CV_lmer_results$RMSE
+  list_CV[[i]][[j]][,4] <- CV_lmer_results$`NRMSE(RNG)`
+  list_CV[[i]][[j]][,5] <- CV_lmer_results$AIC
+  list_CV[[i]][[j]][,6] <- CV_lmer_results$AICc
+  list_CV[[i]][[j]][,7] <- CV_lmer_results$r2m
+  list_CV[[i]][[j]][,8] <- CV_lmer_results$r2c
+  
+ #}) # End of loop
 
 Results_list <- do.call(Map, c(f = rbind, list_CV))
 Final_results <- do.call(rbind, Results_list)  
+
+## End of loop (if used)
 
 write.csv(Final_results,paste0("Outputs/Meta-regression/Cross_validation/Cross_validation_results","_",currentDate,".csv"))
  

@@ -17,7 +17,7 @@ PC <- 'denethor'
 n <- 10000 
 penalty <- 'no'
 ambition_cutoff <- 'no'
-results_date <- '23-02-07'
+results_date <- '23-03-21'
 
 if(PC=='work_laptop') {
   setwd("C:/Users/Hadj/OneDrive - Deakin University/Michalis_Brett/Future_food_systems_review/")
@@ -156,13 +156,16 @@ df_recoded <- All_scen %>%
   #  Percentage<10 ~ sprintf(dp_string2,Percentage),# Number of significant figures depending on whether percentage is less or more than 10
   #  TRUE ~ sprintf(dp_string1,Percentage)
   # ))
+  max_value <- df_table_plot$Percentage %>% max() %>% signif(1)
+  all_breaks <- c(0,20,40,60)
   
   boundary_risk <- df_table_plot %>% 
     ggplot(aes(x = factor(Boundary,levels = rev(boundaries)), y = Percentage, fill= factor(Risk_threshold,levels = c("Risk<0.33","Risk<0.50")))) + 
     geom_bar(position = "dodge", stat = "identity", width = 0.6) + 
     scale_fill_manual(values = c(red_spectral,blue_spectral),
                       labels = c("Risk<0.33","Risk<0.50")) +
-    scale_y_continuous(expand = expansion(mult = c(0.1,0),add = c(0,0)),limits=c(-10,65))+
+    scale_y_continuous(expand = expansion(mult = c(0.1,0),add = c(0,0)),
+                       limits=c(-10,max_value),breaks = all_breaks)+
     # geom_text(aes(y = 20, label = paste(Percentage, "%", sep=" ")), 
     #           hjust = 1, size = 11 * 0.8 / .pt, color = "grey30")+
     geom_text(aes(y = -9, label = paste(
@@ -292,4 +295,13 @@ df_recoded <- All_scen %>%
   ggsave(paste0("Fig_3.tiff") , plot = combined_bars,
          dpi = 1200, width = 100, height = 300, units = "mm",device ="tiff",
          compression="lzw", type="cairo")
+  
+# Tidying up results dataframe
+  df_results <- df_summary_perc %>% 
+    tidyr::pivot_wider(names_from = Int_level,values_from=c(Count,pct)) %>% 
+    rename(Risk_class = Risk_level)
+  
+#openxlsx::write.xlsx(df_results, "Intervention_ambition_by_risk_class.xlsx", sheetName = paste0("Ambition cut-off",as.character(perc_cut[x]*100)," %"), append=TRUE)
+  write.csv(df_results,paste0("Intervention_ambition_by_risk_class_",Sys.Date(),".csv"))
+  
   

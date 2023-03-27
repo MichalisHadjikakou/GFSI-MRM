@@ -1,9 +1,7 @@
 #################### CALCULATING AVERAGE PB VALUES AND RISK ACROSS INDICATORS ##################################
 
-## Last updated: 211121
 ## Author: Michalis Hadjikakou, Deakin University
 ## Purpose: Calculating average risk across boundaries based on predictions for each individual indicator
-
 
 ################################################# 1.0 INITIALISING #####################################################
 
@@ -21,9 +19,9 @@ if(PC=='work_laptop') {
   setwd("C:/Users/Michalis/OneDrive - Deakin University/Michalis_Brett/Future_food_systems_review/GFSS-MM/")  
 }
 
-simdate <- "2023-02-06"# Folder date
+simdate <- "2023-03-21"# Folder date
 simdate_LUC <- "2022-05-16" # For LUC model which is fitted in this script
-simdate_models <- "2022-05-17"
+simdate_models <- "2023-03-15"
 n <- 10000 # Number of random draws
 Nsim <- 2000 # Number of bootstraps
 #future::availableCores()
@@ -153,7 +151,7 @@ LUC_GHG <- Total_Area %>%
 Pred_int <- suppressWarnings(predictInterval(merMod = glmm_global,
                                              newdata = LUC_GHG,
                                              n.sims = Nsim,
-                                             which='full',
+                                             which='full',seed = 101,
                                              level=0.95,
                                              include.resid.var = T,
                                              stat="mean",returnSims = FALSE)) 

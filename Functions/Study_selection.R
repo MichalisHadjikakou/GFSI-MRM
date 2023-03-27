@@ -6,7 +6,7 @@
 # Last updated: 25 July 2019
 # Purpose: Data cleaning and pre-processing
 
-select_studies <- function(df_stat){
+select_studies <- function(df_stat,i){
 
   Years <- c(1995:2012,seq(2015,2070,5)) # Ensures all base years are covered
   
@@ -19,8 +19,7 @@ select_studies <- function(df_stat){
                           "Pfister et al. (2011)", "Powell & Lenton (2012)",
                           "Springer & Duchin (2014)","Odegard & van der Voet (2014)",
                           "de Fraiture & Wichelns (2010)","Roos et al. (2017) No pasture")
-    
-                          #"Roos et al. (2017)","Theurl et al. 2020","Muller et al. (2017)") # Not cropland-focused studies or missing predictor data
+                          
     df_stat <- df_stat %>% 
       filter(Study %notin% excluded_studies) %>% 
       arrange(Study,ScenYear) %>% 
@@ -37,8 +36,7 @@ select_studies <- function(df_stat){
   if (i==2){ # 
     
     excluded_studies <- c("Roos et al. (2017) No pasture","Muller et al. (2017)",#"Theurl et al. (2020)",
-                          "Pfister et al. (2011)",#"Odegard & van der Voet (2014)",
-                          #"Valin et al. (2013)",
+                          "Pfister et al. (2011)",
                           "de Fraiture & Wichelns (2010)") # Very different or constant pasture assumptions
     
     df_stat <- df_stat %>% filter(Study %notin% excluded_studies) 
@@ -50,7 +48,8 @@ select_studies <- function(df_stat){
   
   if (i==3){ # 
     
-    excluded_studies <- c("Pfister et al. (2011)") # Stated clearly that this study was not included as data is missing 
+    excluded_studies <- c("Pfister et al. (2011)",
+                          "Davis et al. (2016)") # Stated clearly that this study was not included as data is missing 
     
     df_stat <- df_stat %>% filter(Study %notin% excluded_studies) %>%
       filter(!ScenYear %in% c(2010:2012)) #%>%  # Added to remove these years from Davis et al. (2016) otherwise too almost many duplicate scenarios
@@ -96,7 +95,7 @@ select_studies <- function(df_stat){
   
   if (i==8){ # 
     
-    excluded_studies <- c()#"Odegard & van der Voet (2014)","Pradhan et al. (2015)")
+    excluded_studies <- c("Metson et al. (2012)") # Yield values are missing 
     excluded_scenarios <- c("TSS") # Organic scenarios with extreme outlier results
     
     df_stat <- df_stat %>% 
@@ -107,7 +106,7 @@ select_studies <- function(df_stat){
   if (i==9){ # 
     
     df_stat <- df_stat %>% 
-      filter(Organic==0) # Removing organic scenarios (cross-validation not possible)
+      filter(Organic==0) # Removing organic scenarios
   }
 
   return(df_stat)

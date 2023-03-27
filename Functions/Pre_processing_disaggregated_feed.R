@@ -99,7 +99,15 @@ DF_preprocess <- function(data_raw, PB_matrix){ # Reading in raw data file
   DF <- mutate(DF,Population = if_else(`Population (units)`=="million",Population*0.001,Population))# Making necessary conversions# Setting PB limits - need to read this in as a data.frame
   DF$`Population (units)`<- "billion" # All units harmonised
   
-  # Caloric intake and yield adjustments
+  # Conversion factors (kcal to kg from FAOSTAT FBS assuming 2010 base year)
+  Rum_meat_CF = 0.784* 1532.004197 + (1-0.784) * 2124.338624 # Ruminant meat conversion factor assumes 0.784 share for beef vs. lamb (see FAOSTAT FBS 2010 Old methodology)
+  Dairy_CF = 559
+  Aqua_CF = 641.715503
+  Eggs_CF = 1432.174888
+  Pork_CF = 2829.276105
+  Poultry_CF = 1419.731259
+  
+  # Tidying up and calculating composite variables
   
   DF <- DF %>% 
     #rowwise() %>% 
@@ -120,8 +128,8 @@ DF_preprocess <- function(data_raw, PB_matrix){ # Reading in raw data file
     mutate(FCR_grass_rum_meat = FCR_rum_meat*(1-FCF_rum_meat),# Grass FCRs for ruminant meat and dairy
            FCR_grass_dairy = FCR_dairy*(1-FCF_dairy),
            FCR_grass_mon = FCR_monogastrics*(1-FCF_monogastrics)) %>% # Grass FCRs for ruminant meat and dairy
-    mutate(Rum_meat_grass_feed = Population*Rum_meat_kcal*FCR_grass_rum_meat, # Composite variables (grass)
-           Dairy_grass_feed = Population*Dairy_kcal*FCR_grass_dairy,# Composite variables (grass)
+    mutate(Rum_meat_grass_feed = Population*Rum_meat_kcal*FCR_grass_rum_meat/Rum_meat_CF, # Composite variables (grass)
+           Dairy_grass_feed = Population*Dairy_kcal*FCR_grass_dairy/Dairy_CF,# Composite variables (grass)
            Mon_grass_feed = Population*FCR_monogastrics*(1-FCF_monogastrics),# Pasture/scavenge feed for poultry/pigs
            Rum_meat_kcal_pop = Population*Rum_meat_kcal, # Composite variable (population X consumption)
            Dairy_kcal_pop = Population*Dairy_kcal, # Composite variable (population X consumption)
@@ -135,29 +143,29 @@ DF_preprocess <- function(data_raw, PB_matrix){ # Reading in raw data file
     #       Eggs_feed = Population*(Eggs_kcal*FCR_FCF_eggs)/Yield, # Composite variable with yields
     #       Mon_feed = (Population*(Non_rum_kcal*FCR_FCF_monogastrics)/Yield),  # Composite variable with yields
     #       Plant_food = Population*Vegetal_kcal/Yield) %>% 
-    mutate(Rum_meat_crop_feed_water = Population*(Rum_meat_kcal*FCR_FCF_rum_meat), # Composite variable with FCR+FCF  # Remove water eventually from name
-           Dairy_crop_feed_water = Population*(Dairy_kcal*FCR_FCF_dairy), # Composite variable with FCR+FCF
+    mutate(Rum_meat_crop_feed_water = Population*(Rum_meat_kcal*FCR_FCF_rum_meat)/Rum_meat_CF, # Composite variable with FCR+FCF  # Remove water eventually from name
+           Dairy_crop_feed_water = Population*(Dairy_kcal*FCR_FCF_dairy)/Dairy_CF, # Composite variable with FCR+FCF
            Mon_meat_feed_water = Population*(Mon_meat_kcal*FCR_FCF_mon_meat), # Composite variable with FCR+FCF
-           Eggs_feed_water = Population*(Eggs_kcal*FCR_FCF_eggs)*1.432,# Composite variable with FCR+FCF
-           Pork_feed_water = Population*(Pork_kcal*FCR_FCF_pork)*2.83,
-           Poultry_feed_water = Population*(Poultry_kcal*FCR_FCF_poultry)*1.42,
-           Aqua_feed_water = Population*(Aqua_kcal*FCR_FCF_aqua)*0.64,
+           Eggs_feed_water = Population*(Eggs_kcal*FCR_FCF_eggs)/Eggs_CF,# kcal_to_kg conversion for eggs
+           Pork_feed_water = Population*(Pork_kcal*FCR_FCF_pork)/Pork_CF,# kcal_to_kg conversion for pigmeat
+           Poultry_feed_water = Population*(Poultry_kcal*FCR_FCF_poultry)/Poultry_CF, # kcal_to_kg conversion for poultry
+           Aqua_feed_water = Population*(Aqua_kcal*FCR_FCF_aqua)/Aqua_CF, # kcal_to_kg conversion for seafood
            Mon_feed_water = Population*Non_rum_kcal*FCR_FCF_monogastrics,# Composite variable with FCR+FCF
            Mon_feed_all = rowSums(across(c(Eggs_feed_water, Pork_feed_water,Poultry_feed_water,Aqua_feed_water)),na.rm=T),
            Rum_feed_water = case_when(
-             is.na(Dairy_crop_feed_water) ~ Rum_meat_crop_feed_water*1.86, # Adding up dairy and ruminant meat crop feed with appropriate conversion to physical units
-             is.na(Rum_meat_crop_feed_water) ~ Dairy_crop_feed_water*0.58,
-             TRUE ~ Dairy_crop_feed_water*0.58 + Rum_meat_crop_feed_water*1.86),
+             is.na(Dairy_crop_feed_water) ~ Rum_meat_crop_feed_water, # Adding up dairy and ruminant meat crop feed with appropriate conversion to physical units
+             is.na(Rum_meat_crop_feed_water) ~ Dairy_crop_feed_water,
+             TRUE ~ Dairy_crop_feed_water + Rum_meat_crop_feed_water),
            Rum_feed_grass = case_when(
-             is.na(Dairy_grass_feed) ~ Rum_meat_grass_feed*1.86, # Adding up dairy and ruminant meat crop feed with appropriate conversion to physical units
-             is.na(Rum_meat_grass_feed) ~ Dairy_grass_feed*0.58,
-             TRUE ~ Dairy_grass_feed*0.58 + Rum_meat_grass_feed*1.86),
-           #Rum_feed_water = Population*(Dairy_kcal*0.58*FCR_FCF_dairy) + (Population*(Rum_meat_kcal*1.86*FCR_FCF_rum_meat)), # Weighted in physical units
+             is.na(Dairy_grass_feed) ~ Rum_meat_grass_feed, # Adding up dairy and ruminant meat crop feed with appropriate conversion to physical units
+             is.na(Rum_meat_grass_feed) ~ Dairy_grass_feed,
+             TRUE ~ Dairy_grass_feed + Rum_meat_grass_feed),
+           Rum_feed_all = Rum_feed_water+Rum_feed_grass, # All ruminant feed (including grass)
            All_feed_water = case_when(
              is.na(Rum_feed_water) ~ Mon_feed_all, # Adding up ruminant and monogastric feed already converted to physical units
              is.na(Mon_feed_all) ~ Rum_feed_water,
              TRUE ~ Rum_feed_water + Mon_feed_all),
-           # Population*(Mon_meat_kcal*2.00*FCR_FCF_mon_meat))),
+           All_feed_all = All_feed_water + Rum_feed_grass,
            Plant_food_water = Population*Vegetal_kcal,
            Rum_kcal_FCR = Rum_meat_kcal*FCR_rum_meat,
            Dairy_kcal_FCR = Dairy_kcal*FCR_dairy,

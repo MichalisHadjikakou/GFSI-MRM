@@ -9,12 +9,12 @@ CV_GLMM <- function(stat_df,CV_reps,ind,i){
 
   max_k <- stat_df$Model %>% unique %>% length() -1 # Number of random intercepts minus 1 to allow sufficient reps
   
-  if(ind[i]=="Water"|ind[i]=="N2O"|ind[i]=="Pfert"){ # This prevents error that occurs when there is also a random slope in the model 
+  if(ind[i]=="Water"|ind[i]=="N2O"){ # This prevents error that occurs when there is a random slope in the model 
     min_k <- max_k
   }else{
     min_k <- 3
   }
-  
+  #|ind[i]=="Pfert"
   data <- stat_df #%>% # Stripping the dataframe to its basics to reduce computation
     #dplyr::select(any_of(c("Model",ind[[i]],sel_pred_plus,"C_price","C_price_cat")))
   

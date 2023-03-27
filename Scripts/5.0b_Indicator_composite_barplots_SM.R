@@ -17,13 +17,19 @@ rm(list = ls())
 PC <- 'denethor'
 write_results <- 'yes'
 n <- 10000 # Number of random draws for distributions/simulations
-sim_date <- "2023-02-07" # Date of simulation - Change this depending on file being read
+sim_date <- "2023-03-21" # Date of simulation - Change this depending on file being read
 today <- Sys.Date() # Today's date
 Base_year <- 2010
 Scen_year <- 2050
 levels <- 4
-Risk_metric <- 'relative' # Set to relative for +/- relative to trend
+Risk_metric <- 'absolute' # Set to relative for +/- relative to trend
 Boundaries <- "FWU+BF" # Set to "LSC+CC" for land-system change+climate change 
+dp1 <- 0 # Number of decimal places
+if(Boundaries=="LSC+CC"){
+  dp2 <- dp1
+}  else {
+  dp2 <- 1
+}
 
 if(PC=='work_laptop') {
   setwd("N:/LES/Burwood/Brett-lab/Michalis/Future_food_systems_review/GFSS-MM/")
@@ -233,12 +239,13 @@ for (i in 1:level_num){
     }  
     # Formatting text to add above bars so that for levels 1,3,4 it considers risk difference relative to BAU levels
     
-    dp <- 0 # Number of decimal places
     
     if (Risk_metric=='absolute'){
       
       Risk_abs <- synth_data$Pred_mean # Trend levels just need the absolute risk number
-      num_lab <- sprintf("%.*f", dp,Risk_abs)
+      num_lab1 <- sprintf("%.*f", dp1,Risk_abs[1:3])
+      num_lab2 <- sprintf("%.*f", dp2,Risk_abs[4:5])
+      num_lab <- c(num_lab1,num_lab2)
       num_lab[num_lab=="NA"] <- "" 
       
       text_offset <- 0# Offset for text label above bar
@@ -248,7 +255,9 @@ for (i in 1:level_num){
       if (j==2) {
       
         Risk_abs <- synth_data$Pred_mean # Trend levels just need the absolute risk number
-        num_lab <- sprintf("%.*f", dp,Risk_abs)
+        num_lab1 <- sprintf("%.*f", dp1,Risk_abs[1:3])
+        num_lab2 <- sprintf("%.*f", dp2,Risk_abs[4:5])
+        num_lab <- c(num_lab1,num_lab2)
         num_lab[num_lab=="NA"] <- "" 
         
         text_offset <- 0# Offset for text label above bar
@@ -265,7 +274,9 @@ for (i in 1:level_num){
         Risk_abs[non_na_risk] <- Risk_trend
         
         Risk_diff <- synth_data$Pred_mean - Risk_abs # This is risk difference
-        num_lab <- sprintf("%+.*f", dp,Risk_diff)
+        num_lab1 <- sprintf("%.*f", dp1,Risk_diff[1:3])
+        num_lab2 <- sprintf("%.*f", dp2,Risk_diff[4:5])
+        num_lab <- c(num_lab1,num_lab2)
         num_lab[num_lab=="NA"] <- "" 
         
         text_offset <- 0.1# Offset for text label above bar

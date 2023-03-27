@@ -1,0 +1,27 @@
+"","Study","ScenYear","Model","Scope","Scenario..author.code.","Pasture.scope","Initial_condition","Delta_initial","Pasture","Rum_feed_grass"
+"8","CIRAD (2016)",2050,"GlobAgri-AgT","Agriculture","Metropolitization_Animp","FAO - Permanent meadows and pastures",3337.74,60.7399999999998,0.20911754660339,0.644161656572278
+"14","CIRAD (2016)",2050,"GlobAgri-AgT","Agriculture","Communities_collapse","FAO - Permanent meadows and pastures",3337.74,60.7399999999998,0.436933374079467,0.167678367364904
+"15","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","BAU","FAO - Permanent meadows and pastures",3306.56753465931,29.5675346593061,0.781589520534003,0.793184474574322
+"16","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","(+Waste)","FAO - Permanent meadows and pastures",3306.56753465931,29.5675346593061,0.59229300925875,0.606863804287024
+"19","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","(+Yield)","FAO - Permanent meadows and pastures",3306.56753465931,29.5675346593061,0.187726347022668,0.793184474574322
+"20","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","(+Volat)","FAO - Permanent meadows and pastures",3306.56753465931,29.5675346593061,0.781589520534003,0.793184474574322
+"21","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","(+Loss)","FAO - Permanent meadows and pastures",3306.56753465931,29.5675346593061,0.781589520534003,0.793184474574322
+"22","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","(+All)","FAO - Permanent meadows and pastures",3306.56753465931,29.5675346593061,-0.595549096882483,-0.394682002175989
+"55","Davis et al. (2016)",2040,"Davis et al. (2016)","Food","B","FAO - Permanent meadows and pastures",3363.81054,86.8105399999999,0.783151294019424,0.766413551815518
+"61","Davis et al. (2016)",2045,"Davis et al. (2016)","Food","S3","FAO - Permanent meadows and pastures",3363.81054,86.8105399999999,-0.674361928038326,-0.125141046022366
+"63","Davis et al. (2016)",2050,"Davis et al. (2016)","Food","S3","FAO - Permanent meadows and pastures",3363.81054,86.8105399999999,-0.873041130552216,-0.416586087271596
+"64","Davis et al. (2016)",2050,"Davis et al. (2016)","Food","S3","FAO - Permanent meadows and pastures",3363.81054,86.8105399999999,-0.818655009014138,-0.171760606037357
+"115","FOLU (2019)",2050,"GLOBIOM","Agriculture","scenBASE","FAO - Permanent meadows and pastures",3490.858,213.858,0.0327652972421106,0.421561743943314
+"120","Odegard & van der Voet (2014)",2050,"Odegard & van der Voet (2014)","Agriculture","A1","FAO - other",2285.71428571429,-991.285714285714,-0.43125,-0.0479965788582511
+"170","Searchinger et al. (2018)",2050,"GlobAgri-WRR","Agriculture","No productivity gains after 2010","FAO - Permanent meadows and pastures",3322,45,0.661950632149308,0.809348775514868
+"308","Theurl et al. (2020)",2050,"BioBaM","Agriculture","Feed-grain_Crop-high yield_Diet-MEAT+bau (0.7+G+HY+MEAT+bau)","‘Grassland’ category by IPCC",2923.13305143056,-353.86694856944,0.343589200661911,0.0396342631164412
+"309","Theurl et al. (2020)",2050,"BioBaM","Agriculture","Feed-grain_Crop-yield gap closed_Diet-MEAT+bau (0.7+G+YGC+MEAT+bau)","‘Grassland’ category by IPCC",2923.13305143056,-353.86694856944,0.514635126797675,0.0396342631164412
+"310","Theurl et al. (2020)",2050,"BioBaM","Agriculture","Feed-grain_Crop-FAO yield_Diet-MEAT+bau (0.7+G+FAO+MEAT+bau)","‘Grassland’ category by IPCC",2923.13305143056,-353.86694856944,0.53847940578658,0.0396342631164412
+"311","Theurl et al. (2020)",2050,"BioBaM","Agriculture","Feed-grain_Crop-organic yields_Diet-MEAT+bau (0.7+G+Org+MEAT+bau)","‘Grassland’ category by IPCC",2923.13305143056,-353.86694856944,0.422925308844365,0.0396342631164412
+"330","Theurl et al. (2020)",2050,"BioBaM","Agriculture","Feed-rough_Crop-FAO yield_Diet-RICH+mono (0.7+R+FAO+RICH+mono)","‘Grassland’ category by IPCC",2923.13305143056,-353.86694856944,-0.427480730245592,-1
+"346","Theurl et al. (2020)",2050,"BioBaM","Agriculture","Feed-rough_Crop-high yield_Diet-VEGET+rumi (0.7+R+HY+VEGET+rumi)","‘Grassland’ category by IPCC",2923.13305143056,-353.86694856944,-0.464270023824743,0.151726266252776
+"347","Theurl et al. (2020)",2050,"BioBaM","Agriculture","Feed-rough_Crop-yield gap closed_Diet-VEGET+rumi (0.7+R+YGC+VEGET+rumi)","‘Grassland’ category by IPCC",2923.13305143056,-353.86694856944,-0.443066746755412,0.151726266252776
+"348","Theurl et al. (2020)",2050,"BioBaM","Agriculture","Feed-rough_Crop-FAO yield_Diet-VEGET+rumi (0.7+R+FAO+VEGET+rumi)","‘Grassland’ category by IPCC",2923.13305143056,-353.86694856944,-0.461030349190239,0.151726266252776
+"353","Theurl et al. (2020)",2050,"BioBaM","Agriculture","Feed-rough_Crop-organic yields_Diet-VEGET+bau (0.7+R+Org+VEGET+bau)","‘Grassland’ category by IPCC",2923.13305143056,-353.86694856944,-0.36458246432163,-1
+"452","Weindl et al. (2017a)",2050,"MAgPIE 3","Agriculture","SSP2-Divergence","FAO - Permanent meadows and pastures",3238,-39,0.0657813465101915,0.798598457451891
+"460","Weindl et al. (2017a)",2050,"MAgPIE 3","Agriculture","SSP2-Divergence+Static WP","FAO - Permanent meadows and pastures",3238,-39,0.0574428659666462,0.798598457451891

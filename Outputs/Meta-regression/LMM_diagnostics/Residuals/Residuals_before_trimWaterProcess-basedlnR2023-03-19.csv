@@ -1,0 +1,11 @@
+"","Study","ScenYear","Model","Scope","Scenario..author.code.","Water.scope","Initial_condition","Delta_initial","Water","All_feed_water","Plant_food_water","Yield","WPinc"
+"1","Damerau et al. (2016)",2050,"Damerau et al. (2016)","Agriculture","2050 Increased protein (from animal sources)","Water Footprint Network - Mekonnen & Hoekstra (2011)",1741.59487809586,-65.4051219041407,0.108462289515688,0.0646508681856826,0.120173945126049,0,-0.141927637593062
+"2","Damerau et al. (2016)",2050,"Damerau et al. (2016)","Agriculture","2050 Replaced foods","Water Footprint Network - Mekonnen & Hoekstra (2011)",1741.59487809586,-65.4051219041407,-0.0447870431879527,0.0271257346743969,0.0534288114975094,0,-0.166243913761107
+"3","Damerau et al. (2016)",2050,"Damerau et al. (2016)","Agriculture","2050 Macro-nutrient shift","Water Footprint Network - Mekonnen & Hoekstra (2011)",1741.59487809586,-65.4051219041407,-0.286515894342704,0.698458678164262,-0.144369069723812,0,-0.0134069455090788
+"10","Ercin & Hoekstra (2014)",2050,"Ercin & Hoekstra (2014)","Agriculture","S1","Water Footprint Network - Mekonnen & Hoekstra (2011)",794.146,-1012.854,0.316029669776337,0.975114099754682,0.403655116219133,0,0.301403180511272
+"11","Ercin & Hoekstra (2014)",2050,"Ercin & Hoekstra (2014)","Agriculture","S3","Water Footprint Network - Mekonnen & Hoekstra (2011)",794.146,-1012.854,0.434422591281834,0.000537078847268502,0.694709210912892,0,0
+"96","Muller et al. (2017)",2050,"SOLm","Agriculture","0Conc_0Org_W50","FAO AQUASTAT 2013",1371.32,-435.68,0.0609488596245458,-1,0.501533607876281,0.292682926829268,0
+"106","Muller et al. (2017)",2050,"SOLm","Agriculture","0Conc_0Org_W50_CCyes","FAO AQUASTAT 2013",1371.32,-435.68,0.0356574399977141,-1,0.501829932001612,0.331707317073171,0
+"110","Muller et al. (2017)",2050,"SOLm","Agriculture","0Conc_20Org_W50_CCyes","FAO AQUASTAT 2013",1371.32,-435.68,0.03603032100023,-1,0.500229781724826,0.290243902439024,0
+"132","Muller et al. (2017)",2050,"SOLm","Agriculture","100Conc_80Org","FAO AQUASTAT 2013",1371.32,-435.68,0.464069311510645,0.519367730342508,0.462300293682482,0.373170731707317,0
+"142","Muller et al. (2017)",2050,"SOLm","Agriculture","100Conc_60Org_CCyes","FAO AQUASTAT 2013",1371.32,-435.68,0.448698217995794,0.62317123218353,0.462833677108077,0.145050182195122,0
