@@ -9,7 +9,7 @@ Transforming the global food system is necessary to avoid exceeding planetary bo
 
 ## Description
 
-This repository provides the underlying code to reproduce the analysis for the manuscript titled **_Mitigating risk of exceeding environmental limits requires ambitious food system interventions_**, currently under review. 
+This repository provides the underlying code to reproduce the analysis for the manuscript titled **_Mitigating risk of exceeding environmental limits requires ambitious food system interventions_**, currently under review. A [pre-print](https://doi.org/10.31223/X50H2B) of the manuscript is available from EarthArXiv.
 
 ## Getting Started
 
