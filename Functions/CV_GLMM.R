@@ -1,6 +1,5 @@
 #################### LMER Model cross-validations ##################################
 
-## Last updated: 211104
 ## Author: Michalis Hadjikakou, Deakin University
 ## Purpose: Performing repeated k-fold cross-validation for different numbers of K and repetitions
 ## Source: https://cran.microsoft.com/snapshot/2019-09-16/web/packages/cvms/vignettes/Introduction_to_cvms.html
@@ -15,21 +14,7 @@ CV_GLMM <- function(stat_df,CV_reps,ind,i){
     min_k <- 3
   }
   #|ind[i]=="Pfert"
-  data <- stat_df #%>% # Stripping the dataframe to its basics to reduce computation
-    #dplyr::select(any_of(c("Model",ind[[i]],sel_pred_plus,"C_price","C_price_cat")))
-  
-  #If only one cross-validation 
-  # data <- fold(data, k = k,
-  #              id_col = 'Model') %>%
-  #   arrange(.folds)
-  # 
-  # CV <- cross_validate(data, paste0(ind[i]," ~ ",list_par[[i]][[j]],"+ (1|Model)"),
-  #                       metrics = "all",
-  #                       fold_cols = '.folds',
-  #                       family = 'gaussian',
-  #                       REML = TRUE,parallel = FALSE)
-  
-  #Repeat cross-validation (repCV)
+  data <- stat_df 
   
   library(doParallel)
   doParallel::registerDoParallel(max_k)
@@ -42,10 +27,6 @@ CV_GLMM <- function(stat_df,CV_reps,ind,i){
                parallel = TRUE)
   
   fold_columns <- paste0(".folds_", seq_along(fold_counts))
-  
-  # formulae <- combine_predictors(dependent = ind[i], # Allows testing all predictor combinations
-  #                               fixed_effects = list_var[[i]][[j]],
-  #                               random_effects = "(1|Model)")
   
   form_char <- formula(glmm_global) %>% as.character() # Extracting the glmm formula as character to be used in cross_validate function
   

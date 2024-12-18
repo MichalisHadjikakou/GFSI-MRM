@@ -1,45 +1,27 @@
 ##################################################
-## FUTURE FOOD SCENARIOS - Parallel set plots ##
+## FUTURE FOOD SCENARIOS - Risk-compliant combinations ##
 ##################################################
 
+# Author: Michalis Hadjikakou, Deakin University (m.hadjikakou@deakin.edu.au)
+# Purpose: Calculate intervention-level percentages of different risk-compliant combinations
+# Outputs: Figure 4 in the main manuscript (using inputs from script 6.0a)
+
 ### 1. Loading packages and functions and specifying working directory and parameters
-rm(list = ls())
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(tidyverse,viridis,future.apply,data.table)
 
-#library(magrittr)
-#library(dplyr)
-#library(tibble)
-#ggalluvial,ggforce,palmerpenguins,easyalluvial
-#remotes::install_github("yaweige/ggpcp", build_vignettes = TRUE)
-
-PC <- 'denethor'
 n <- 10000 
-penalty <- 'no'
-ambition_cutoff <- 'no'
-results_date <- '23-03-21'
+results_date <- '2024-11-01'
 
-if(PC=='work_laptop') {
-  setwd("C:/Users/Hadj/OneDrive - Deakin University/Michalis_Brett/Future_food_systems_review/")
-} else if (PC =='analytix') {
-  setwd("M:/Current-Users/Michalis-Hadjikakou/Food_Meta_Analysis_Enayat/Notebook/")
-} else {
-  setwd("//school-les-m.shares.deakin.edu.au/school-les-m/Planet-A/Food-Systems/Meta_analysis/GFSI-MRM/GFSI-MRM/Outputs/Pareto_analysis+plots/")  
-}
+# Reading file with all scenario combinations
 
-# If there is a penalty read the penalty file
-if (penalty=='yes') {
-  
-  All_scen <- fread(paste0("All_merged_scenarios_penalty_",results_date,".csv"))
-}else{
-  All_scen <- fread(paste0("All_merged_scenarios_",results_date,".csv"))
-}  
+All_scen <- fread(paste0("Outputs/Pareto_analysis+plots/All_merged_scenarios_",results_date,".csv"))
 
 # Risk cut-off parameters
 threshold_high <- 0.5
 threshold_CC_high <- 0.5
 threshold_low <- 1/3
-threshold_CC_low <- 0.40
+threshold_CC_low <- 1/3
 perc_cut  <- c(1,0.5,0.25,0.1) # Choice of ambition percentile to consider 
 scaling_factor <- 10 # scales the low risk scenarios to ensure they are visible
 
@@ -74,11 +56,6 @@ df_table <- All_scen %>%
                   .<1/3 ~ "Low_risk",
                   TRUE ~ "High_risk"),
                 .names = "{col}_0.33")) %>% 
-  mutate(Risk_Climate_Change_0.33 = # Correction for climate change
-           case_when(
-             Risk_Climate_Change<0.4 ~ "Low_risk",
-             TRUE ~ "High_risk"
-           )) %>% 
   mutate(All_boundaries_0.50 = case_when(
     Risk_Land_system_change <= threshold_high & Risk_Freshwater_Use <= threshold_high & Risk_Biogeochemical_Flows <= threshold_high & Risk_Climate_Change <= threshold_CC_high ~ "Low_risk",
     TRUE ~ "High_risk")) %>%
@@ -115,24 +92,6 @@ df_recoded <- All_scen %>%
     Risk_Land_system_change <= threshold_low & Risk_Freshwater_Use <= threshold_low & Risk_Biogeochemical_Flows <= threshold_low & Risk_Climate_Change <= threshold_CC_low ~ "Risk<0.33",
     TRUE ~ Likely)) %>% 
   select(Pop_levels:N_management,Likely,Ambition_all_boundaries,Risk_all_boundaries)
-
-
-# 2.2 Lowest ambition scenarios by class
-  
-  if (ambition_cutoff=='yes'){
-    
-    df_recoded <- df_recoded %>% 
-      filter(Likely!="Risk>0.50") %>% # Removing high risk scenarios
-      group_by(Likely) %>%  # Grouping by risk class
-      slice_min(order_by = Ambition_all_boundaries,prop = perc_cut[x], with_ties = FALSE) %>% # Ranking by ambition and selecting top 10%
-      ungroup()
-    #arrange(Ambition_all_boundaries,.by_group = TRUE) %>% 
-    #slice(1:10)
-  }else{
-    
-    x <- ""
-    
-  }
   
   N_scen <- df_recoded$Likely %>% 
     table() %>% 
@@ -151,35 +110,38 @@ df_recoded <- All_scen %>%
     mutate(Risk_threshold = case_when(
       Risk_threshold == "Low_risk" ~ "Risk<0.33",
       TRUE ~ "Risk<0.50"
-    )) #%>% 
-  #mutate(Percentage = case_when(
-  #  Percentage<10 ~ sprintf(dp_string2,Percentage),# Number of significant figures depending on whether percentage is less or more than 10
-  #  TRUE ~ sprintf(dp_string1,Percentage)
-  # ))
+    )) 
+  
+  figure_labels <- c("All limits","Nutrient cycles: N & P","Surface water flows","GHG emissions","Agricultural area")
+  
   max_value <- df_table_plot$Percentage %>% max() %>% signif(1)
-  all_breaks <- c(0,20,40,60)
+  all_breaks <- c(0,20,40,60,80)
   
   boundary_risk <- df_table_plot %>% 
-    ggplot(aes(x = factor(Boundary,levels = rev(boundaries)), y = Percentage, fill= factor(Risk_threshold,levels = c("Risk<0.33","Risk<0.50")))) + 
+    mutate(Boundary = case_match(
+      Boundary,
+      "Land-system change" ~ "Agricultural area",
+      "Climate change" ~ "GHG emissions",
+      "Freshwater use" ~ "Surface water flows",
+      "Biogeochemical flows" ~ "Nutrient cycles: N & P",
+      "All boundaries" ~ "All limits"
+    )) %>% 
+    ggplot(aes(x = factor(Boundary,levels = figure_labels), y = Percentage, fill= factor(Risk_threshold,levels = c("Risk<0.33","Risk<0.50")))) + 
     geom_bar(position = "dodge", stat = "identity", width = 0.6) + 
-    scale_fill_manual(values = c(red_spectral,blue_spectral),
-                      labels = c("Risk<0.33","Risk<0.50")) +
     scale_y_continuous(expand = expansion(mult = c(0.1,0),add = c(0,0)),
-                       limits=c(-10,max_value),breaks = all_breaks)+
-    # geom_text(aes(y = 20, label = paste(Percentage, "%", sep=" ")), 
-    #           hjust = 1, size = 11 * 0.8 / .pt, color = "grey30")+
-    geom_text(aes(y = -9, label = paste(
+                       limits=c(-15,max_value),breaks = all_breaks)+
+    geom_text(aes(y = -13, label = paste(
       case_when(
         Percentage<10 ~ sprintf(dp_string2,Percentage),# Number of significant figures depending on whether percentage is less or more than 10
         TRUE ~ sprintf(dp_string1,Percentage)),
       "%", sep=" ")),size = 3,
       position = position_dodge(width = .6), color = "black") +
-    labs(x = "Planetary boundary", y = "Compliant combinations (%)") +
+    labs(x = "Environmental limit", y = "Compliant combinations (%)") +
     theme_light() +
     coord_flip() +
-    theme(#legend.position  = c(0.225, -0.2),
-      #legend.direction = 'horizontal',
-      #plot.margin      = grid::unit(c(0.1,0.1,2.5,0.1), 'lines'),
+    scale_fill_manual(values = alpha(c(red_spectral,blue_spectral),0.75),
+      breaks = c("Risk<0.50","Risk<0.33"))+
+    theme(
       legend.position = "bottom",
       legend.title = element_blank(),
       axis.title = element_text(size=11.5),
@@ -213,19 +175,7 @@ df_recoded <- All_scen %>%
     colnames()
   
   Int_names <- c("Population","Animal calories","Plant calories","Waste",
-                 "Crop yields","Feed conversion ratio","Feed composition","Water-use efficiency","Climate action","N & P management")
-  
-  # df_summary <- lapply(seq_along(Int_string), function (x) df_likely %>% # Looping across interventions 
-  #   group_by(across(c("Likely",Int_string[x]))) %>% 
-  #   count() %>%
-  #   magrittr::set_colnames(c("Risk_level","Int_level","Count")) %>% 
-  #   add_column(Intervention=Int_names[x],.before = 1)) %>% 
-  #   bind_rows() %>% 
-  #   mutate(Int_level = case_when( # Harmonising level names by ambition
-  #     Int_level %in% c("8.5","LOW ASF","2300","Half","1.6","HIGH","HIGH GRAIN/LOW GRASS","0.3","200","+30% NUE,30% REC") ~ "VH",
-  #     Int_level %in% c("8.9","REDUCED MEAT","2500","BAU_Low","1.45","ACCELERATED","INTENSIFIED","0.2","100","+20% NUE,+20% REC") ~ "H",
-  #     Ints _level %in% c("9.7","BAU DIET","2700","BAU_High","1.3","TREND","BAU","0.1","25","+10% NUE,10% REC") ~ "T",
-  #     TRUE ~ "L"))
+                 "Crop yields","Feed conversion ratio","Feed composition","Water-use efficiency","Emissions intensity","N & P management")
   
   df_summary <- lapply(seq_along(Int_string), function (x) df_likely %>% # Looping across interventions 
                          group_by(across(c("Likely",Int_string[x]))) %>% 
@@ -234,9 +184,9 @@ df_recoded <- All_scen %>%
                          add_column(Intervention=Int_names[x],.before = 1)) %>% 
     bind_rows() %>% 
     mutate(Int_level = case_when( # Harmonising level names by ambition
-      Int_level %in% c("8.5","LOW ASF","2300","Half","1.6","HIGH","HIGH GRAIN/LOW GRASS","0.3","200","+30% NUE,30% REC") ~ "Very High",
-      Int_level %in% c("8.9","REDUCED MEAT","2500","BAU_Low","1.45","ACCELERATED","INTENSIFIED","0.2","100","+20% NUE,+20% REC") ~ "High",
-      Int_level %in% c("9.7","BAU DIET","2700","Current","1.3","TREND","BAU","0.1","25","+10% NUE,+10% REC") ~ "Trend",
+      Int_level %in% c("9.1","LOW ASF","2300","Half","1.6","HIGH","HIGH GRAIN/LOW GRASS","0.15","200","+30% NUE,30% REC") ~ "Very High",
+      Int_level %in% c("9.5","REDUCED MEAT","2500","BAU_Low","1.45","ACCELERATED","INTENSIFIED","0.1","100","+20% NUE,+20% REC") ~ "High",
+      Int_level %in% c("9.7","BAU DIET","2700","Current","1.3","TREND","BAU","0.05","25","+10% NUE,+10% REC") ~ "Trend",
       TRUE ~ "Low"))
   
   # Percentage stacked barplot
@@ -246,53 +196,46 @@ df_recoded <- All_scen %>%
     mutate(pct= prop.table(Count) * 100)
   
   summary_plot <- df_summary_perc %>% 
-    ggplot() + aes(Risk_level, pct, fill=factor(Int_level,levels = c("Low","Trend","High","Very High"))) +
+    ggplot() + aes(factor(Risk_level,levels = c("Risk<0.50","Risk<0.33")), pct, fill=factor(Int_level,levels = c("Low","Trend","High","Very High"))) +
     scale_fill_viridis(discrete = TRUE,begin = 0, end=1,option = "C",direction = -1,alpha = 0.85)+
     geom_bar(stat="identity",width = 0.8) +
     ylab("Level of mitigation ambition (%) ") +
     xlab("Risk mitigation threshold") + 
-    #geom_text(aes(label=paste0(sprintf("%1.1f", pct),"%")),
-    #          position=position_stack(vjust=0.5)) +
     facet_wrap(~factor(Intervention, levels=Int_names),ncol = 2) +
     theme_bw() +
     theme(legend.position = "bottom",
           legend.title = element_blank(),
           axis.title = element_text(size=11.5),
-          axis.text = element_text(size=10),
+          axis.text = element_text(size=9.5),
           strip.text = element_text(size = 10),
           axis.ticks.x = element_blank(),
           panel.grid.minor = element_blank(),
           panel.grid.major.x = element_blank())
-  #theme_bw()
-  ggsave(paste0("Risk_level_summary_",penalty,"_",ambition_cutoff,"_",perc_cut[x],".tiff", sep = " ") , plot = summary_plot,
-         dpi = 1200, width = 100, height = 200, units = "mm",device ="tiff",
-         compression="lzw", type="cairo")
   
   leg_p1 <- cowplot::get_legend(boundary_risk)
   mod_p1 <- cowplot::plot_grid(boundary_risk + theme(legend.position = "none"), leg_p1, nrow = 2, rel_heights = c(1, 0.1))
   
   
-  combined_bars <- cowplot::plot_grid(labels = c("A", "B"),
+  combined_bars <- cowplot::plot_grid(labels = c("a", "b"),
                                       boundary_risk,summary_plot,
                                       nrow=2,ncol=1,
                                       #scale = c(0.8,1),
                                       rel_heights = c(0.5,1))
   
-  
   boundary_risk_mod <- cowplot::plot_grid(boundary_risk,NULL,nrow=2)
   
-  combined_unstretched <- cowplot::plot_grid(labels = c("A","B"),
+  combined_unstretched <- cowplot::plot_grid(labels = c("a","b"),
                                              boundary_risk_mod, summary_plot,
                                              rel_widths = c(1.1,1),
                                              ncol = 2,
                                              align = "h",axis = "b")
   
   # 2-column
-  ggsave(paste0("Fig_3_unstretched.png") , plot = combined_unstretched,
+  ggsave(paste0("Outputs/Pareto_analysis+plots/Fig_4_unstretched_",Sys.Date(),".png") , plot = combined_unstretched,
          dpi = 1200,width = 7.35, height = 8.28, units = "in")
   
   # 1-column vertical figure
-  ggsave(paste0("Fig_3.tiff") , plot = combined_bars,
+  ggsave(paste0("Outputs/Pareto_analysis+plots/Fig_4_",Sys.Date(),".tiff") , plot = combined_bars,
          dpi = 1200, width = 100, height = 300, units = "mm",device ="tiff",
          compression="lzw", type="cairo")
   
@@ -302,6 +245,6 @@ df_recoded <- All_scen %>%
     rename(Risk_class = Risk_level)
   
 #openxlsx::write.xlsx(df_results, "Intervention_ambition_by_risk_class.xlsx", sheetName = paste0("Ambition cut-off",as.character(perc_cut[x]*100)," %"), append=TRUE)
-  write.csv(df_results,paste0("Intervention_ambition_by_risk_class_",Sys.Date(),".csv"))
+  write.csv(df_results,paste0("Outputs/Pareto_analysis+plots/Intervention_ambition_by_risk_class_",Sys.Date(),".csv"))
   
   

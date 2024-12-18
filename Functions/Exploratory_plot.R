@@ -3,7 +3,6 @@ exploratory_plots <- function(df_stat, key_preds,key_preds_string,ind,i){
 p1 <- ggplot(df_stat, aes_string(x = "Model", y = ind[i])) +
   geom_boxplot() +
   theme_bw() +
-  #theme(axis.text.x = element_text(angle=90)) +
   guides(x =  guide_axis(angle = 90))+
   coord_cartesian(ylim=c(-1, 1))+
   labs(x = "Model", y = paste(ind[i],effect_size))
@@ -24,12 +23,6 @@ p3 <- ggplot(df_stat, aes_string(x = key_preds[i], y = ind[i], colour="Model")) 
   labs(y = paste(ind[i],effect_size),
        x = paste(key_preds_string[i],"(% increase)"))
 
-#p4 <- grid.arrange(grobs = list(p1, p3, p2), widths = c(1, 1), layout_matrix = rbind(c(1, 1), c(2, 3)))
-
-#bottom_row <- plot_grid(p2, p3, labels = c('B', 'C'), label_size = 12)
-
-#p4 <- plot_grid(p1, bottom_row, labels = c('A', ''), label_size = 12, ncol = 1)
-
 plots <- align_plots(p1, p2, align = 'v', axis = 'l')
 # then build the bottom row
 bottom_row <- plot_grid(plots[[2]], p3, labels = c('B', 'C'), label_size = 10)
@@ -38,7 +31,7 @@ bottom_row <- plot_grid(plots[[2]], p3, labels = c('B', 'C'), label_size = 10)
 p4 <- plot_grid(plots[[1]], bottom_row, labels = c('A', ''), label_size = 10, ncol = 1)
 
 
-ggsave(paste0("Outputs/Meta-regression/Exploratory_plots/Effect_size_distribution_",ind[i],model_specs[j],".tiff"),
+ggsave(paste0(here("Outputs/Meta-regression/Exploratory_plots//"),"Effect_size_distribution_",ind[i],model_specs[j],".tiff"),
        plot=p4,  dpi = 600, width = 200, height = 150, units = "mm",device ="tiff",
        compression="lzw", type="cairo")
 

@@ -3,16 +3,11 @@
 ##################################################
 
 # Author: Michalis Hadjikakou, Deakin University (m.hadjikakou@deakin.edu.au)
-# Last updated: 26 April 2022
 # Purpose: Generate synthetic dataset for predictions across all indicators
 
 Prediction_dataset <- function(Base_year,Scen_year,levels){
 
   ## 1. Initialising function
-  ## 1.1 Create vectors with feasible range for each factor/variable - to be used for predictions
-  #levels <- 4 # number of levels
-  #Base_year <- 2010 # Selecting base year (any year - currently limited to 2013 due to FAOSTAT FBS)
-  #Scen_year <- 2050 # Projections currently only for 2050 (can be modified)
   Area <- "World" # Only set up for global projections
   Food_element <- "Food supply (kcal/capita/day)" # kcal form the basis - can be changed to kg or other unit of choice
   Yield_element <- "All cereals" # Cereals used as proxy for yield growth
@@ -28,38 +23,30 @@ Prediction_dataset <- function(Base_year,Scen_year,levels){
   
   # 2.1 Socioeconomic variables - loading all datasets
   
-  data(pop) # Loading historical population data
-  Pop_base_year <- pop %>% 
-    dplyr::filter(name==Area) %>% # Global 
-    dplyr::pull(as.character(Base_year))/1e6  # Pulling out base year value and converting to billions
+  # Loading SSP projections (source: Wittgenstein Centre for Demography and Human Capital Data Explorer, https://guyabel.github.io/wcde/index.html)
+  pop_SSPs <- get_wcde(indicator = "pop",scenario = 1:5) %>% 
+    dplyr::filter(name==Area,year==Scen_year) %>% 
+    dplyr::mutate(pop = pop/1e6)
   
-  data("popproj")
-  data("popproj95u")
-  data("popproj95l")
-  data("popprojHigh")
-  data("popprojLow")
+  # Reading in sheet with historical and future population from UN WPP 2024 (POP/DB/WPP/Rev.2024/GEN/F01/Rev.1, Source: https://population.un.org/wpp/Download/Standard/MostUsed/)
+  pop_wpp22 <- read.csv("Input_data/Population_UNWPP_2024.csv") %>% 
+    dplyr::mutate(Value = Value/1e6) 
   
-  Pop_scen <- c("popproj","popproj95u","popproj95l","popprojHigh","popprojLow")
-  Pop_region <- c(rep(Area,3),rep(toupper(Area),2))
+  pop_base_year <- pop_wpp22 %>% 
+    dplyr::filter(Year==Base_year) %>% # Global 
+    dplyr::pull(Value)  # Pulling out base year value and converting to billions
   
-  Pop_2050 <- sapply(seq_along(Pop_scen),function(x) eval(parse(text=Pop_scen[x])) %>% # Loading all future population projections and confidence intervals 
-           dplyr::filter(name==Pop_region[x]) %>% #Global
-           dplyr::pull(as.character(Scen_year))/1e6) %>% 
-           data.frame()%>% 
-           tibble::add_column(Scenario=Pop_scen,.before=1) %>% 
-           dplyr::rename(Value=2) # Pulling out base year value and converting to billions
+  pop_2050_BAU <- pop_wpp22 %>% 
+    dplyr::filter(Scenario=="Medium") %>% # Global 
+    dplyr::pull(Value)  # Pulling out base year value and converting to billions
   
-  Pop_levels <- c(8.5,Pop_2050$Value[5],Pop_2050$Value[1],Pop_2050$Value[4])
+  pop_2050_SSP <- seq(pop_SSPs$pop %>% min(),pop_SSPs$pop %>% max(),length.out= levels)
   
-  Population <- Pop_levels/Pop_base_year-1 # SSP1 (most optimistic) + Low, Median, High estimate from UN DESA (2019) - source: https://population.un.org/wpp/Download/Standard/Population/
+  Pop_levels <- c(pop_2050_SSP[1:2],pop_2050_BAU,pop_2050_SSP %>% max())
+  
+  Population <- Pop_levels/pop_base_year-1 # SSP1 (most optimistic) + Low, Median, High estimate from UN DESA (2019) - source: https://population.un.org/wpp/Download/Standard/Population/
   
   Pop_2050_levels <- data.frame(Pop_levels,Population)
-  
-  remove(pop,popF,popFprojMed,popFT,popFTproj,popM,popMprojMed,popMT,popMTproj,popproj,popproj95l,popproj95u,popprojHigh,popprojLow)
-  
-  #Population <- seq(8.5,Pop_2050$Value[4],length.out= levels)/Pop_base_year
-  
-  #Population <- c(8.5,9.1,UN_median_2050,10.3)/Pop_base_year # SSP1 (most optimistic) + Low, Median, High estimate from UN DESA (2019) - source: https://population.un.org/wpp/Download/Standard/Population/
   
   # 2.2 Diet variables - as multipliers compared to base year FAOSTAT food supply - NO WASTE
   
@@ -89,7 +76,6 @@ Prediction_dataset <- function(Base_year,Scen_year,levels){
                                  Dairy_kcal = c(Kcal_values[5],seq(120,180,length.out= levels)),
                                  Non_rum_kcal = c(Kcal_values[4]+Kcal_values[6],seq(150,300,length.out= levels)+seq(15,60,length.out= levels)),
                                  Vegetal_kcal = c(Kcal_values[1],seq(2300,2900,length.out= levels)))
-    #mutate_all(funs(c(first(.), (. / first(.))[-1]-1)) )
   
   Diet_2010 <- Diet_all %>% 
     dplyr::filter(dplyr::row_number()==1)
@@ -98,8 +84,7 @@ Prediction_dataset <- function(Base_year,Scen_year,levels){
     dplyr::filter(dplyr::row_number()!=1) 
   
   Diet_2050_comb <- expand.grid(Diet_2050) %>% 
-    #select(-Vegetal_kcal),Diet_all$Vegetal_kcal) %>% 
-    dplyr::add_row(Diet_2010 %>% as.vector(),.before = 1) # Creating all combinations
+    dplyr::add_row(Diet_2010,.before = 1) # Creating all combinations
   
   Diet_2050 <- Diet_2050_comb %>%  # Calculating relative deviation (%) from base year
     dplyr::mutate_all(dplyr::funs(c(dplyr::first(.), (. / dplyr::first(.))[-1]-1)) )  
@@ -125,19 +110,6 @@ Prediction_dataset <- function(Base_year,Scen_year,levels){
   
   }
   
-  # All_combinations <- Diet_2050_comb %>% 
-  #   slice(-1) %>% 
-  #   pivot_longer(cols = Rum_meat_kcal:Vegetal_kcal,names_to = "Category",values_to = "kcal") %>% 
-  #   merge(Base_year_diet) %>% 
-  #   merge(Waste_ratios) %>% 
-  #   mutate(Current = kcal,
-  #          BAU_High = kcal*(1+(Waste_fraction/4)),
-  #          BAU_Low = kcal*(1-(Waste_fraction/4)),
-  #          Half = kcal*(1-(Waste_fraction/2))) 
-  # 
-  # 2.2 Diet variables - as multipliers compared to base year FAOSTAT food supply - WITH WASTE
-  # Waste scenarios - using weighted average ratios from 2010 (Source: Springmann et al. 2018, based on Gustavsson et al. 2011)
-  
   Waste_levels <- c("Current","BAU_High","BAU_Low","Half") # All waste levels
   Diet_levels <- c("Current","FLEX","LOW MEAT","BAU","RICH") # Pre-canned diet levels - if using that instead of separate animal/veg calorie combinations
   
@@ -152,7 +124,6 @@ Prediction_dataset <- function(Base_year,Scen_year,levels){
   Diet_waste_all <- Diet_2050_selected %>% 
     dplyr::select(Diet,Rum_meat_kcal_levels:Plant_kcal_levels) %>% # cAN CHANGE to Diet 2050
     magrittr::set_colnames(c("Diet","Rum_meat_kcal","Dairy_kcal","Non_rum_kcal","Vegetal_kcal")) %>% 
-    #add_column(Diet = Diet_levels) %>% 
     tidyr::pivot_longer(cols = Rum_meat_kcal:Vegetal_kcal,names_to = "Category",values_to = "kcal_pc") %>% 
     merge(Waste_ratios) %>% 
     dplyr::mutate(Current = kcal_pc,
@@ -169,7 +140,6 @@ Prediction_dataset <- function(Base_year,Scen_year,levels){
   # Calculating change relative to the base year for all scenario combinations (including zero waste)
   Diet_waste_relative <- Diet_waste_all %>% 
     dplyr::select(-c(kcal_pc,Waste_fraction)) %>% 
-    #filter(Diet!="Current") %>% 
     tidyr::pivot_longer(cols = Current:Zero,names_to = "Waste",values_to = "kcal") %>% 
     dplyr::arrange(Diet,Waste) %>% 
     merge(Base_year_diet) %>% 
@@ -237,23 +207,6 @@ Diet_waste_final <- Diet_waste_change_all %>% # Adding levels as supply (full wa
     
   # 2.4 Livestock feed efficiency and feed composition variables (FCR & FCF)
   
-  #Feed_eff <- seq(1,1.30,length.out=4) # Based on dataset and FAO, FAO X2, FAOX4
-  # FCR_rum_meat_2010 <- DF %>% 
-  #   filter(ScenYear==2010,FCR_monogastrics>2) %>% 
-  #   pull(FCR_monogastrics) %>% 
-  #   summary()
-  # 
-  # FCR_rum_meat_2050 <- DF %>% 
-  #   filter(ScenYear==2050,FCR_monogastrics>2) %>% 
-  #   pull(FCR_monogastrics) %>% 
-  #   summary()
-  # 
-  # ggplot(data = DF, aes(x = FCR_rum_meat, y = FCF_rum_meat,colour=Model)) + 
-  #   geom_point()
-  # 
-  # ggplot(data = DF %>% filter(ScenYear==2050,FCR_monogastrics>2), aes(x = FCR_monogastrics, y = FCF_monogastrics,colour=Model)) + 
-  #   geom_point()
-  
   FCR_rum_meat <- seq(35,20,length.out=levels) # Taking FCR levels established through summary statistics of papers in the database
   FCF_rum_meat <- seq(0.05,0.2,length.out=levels) # Taking FCF levels established through summary statistics of papers in the database
   
@@ -279,31 +232,11 @@ Diet_waste_final <- Diet_waste_change_all %>% # Adding levels as supply (full wa
     dplyr::mutate(dplyr::across(c("FCR_monogastrics","FCR_FCF_monogastrics","FCR_grass_monogastrics"), ~(.) / dplyr::first(.)-1))# Calculating percentage change
   
   FCR_FCF_2050_levels <- cbind(FCR_FCF_rum_meat,FCR_FCF_dairy,FCR_FCF_monogastrics) %>%  # Binding FCRs/FCFs for all animals - these will all vary together
-    #slice(-1) %>% 
     dplyr::mutate(Feed_efficiency = dplyr::case_when(FCR_rum_meat==0 & FCR_dairy==0 & FCR_monogastrics==0 ~ "STAGNANT", # Ruminant meat trends also follows the others
                                        FCR_dairy==-0.125 & FCR_monogastrics==-0.125 ~ "TREND",
                                        FCR_dairy==-0.250 & FCR_monogastrics==-0.250 ~ "ACCELERATED",
                                        FCR_dairy==-0.375 & FCR_monogastrics==-0.375 ~ "HIGH")) %>% 
     tibble::add_column(Feed_composition = rep(c("LOW GRAIN/HIGH GRASS","TREND","INTENSIFIED","HIGH GRAIN/LOW GRASS"),4)) 
-    # mutate(Feed_composition = case_when(FCF_rum_meat==0.05 & FCF_dairy==0.15 & FCF_monogastrics==0.80 ~ "LOW GRAIN/HIGH GRASS", # Ruminant meat trends also follows the others
-    #                                     FCF_dairy==0.20 & FCF_rum_meat==0.10 & FCF_monogastrics==0.85 ~ "TREND",
-    #                                     FCF_dairy==0.25 & FCF_monogastrics==0.90 ~ "INTENSIFIED",
-    #                                     FCF_dairy==0.30 & FCF_monogastrics==0.95 ~ "HIGH GRAIN/LOW GRASS"))
-    # Removing base year row
-  
-  # FCR_inc_rum <- seq(1,0.7,length.out=levels)-1# Based on efficiency improvements in papers in the database
-  # FCR_inc_mon <- seq(1,0.8,length.out=levels)-1 # Based on efficiency improvements in papers in the database
-  # 
-  # FCR_rum_meat <- FCR_inc_rum # Ruminant meat feed efficiency 
-  # FCR_non_rum_kcal <- FCR_inc_mon # Monogastric meat feed efficiency 
-  # FCR_dairy <- FCR_inc_rum # Dairy feed efficiency
-  # #FCR_eggs <- FCR_inc_mon # Eggs feed efficiency
-  # 
-  # FCF_rum_meat <- seq(0.05,0.35,length.out=levels) # % FCF for ruminant meat (range based on papers in database)
-  # FCF_non_rum_kcal <- seq(0.8,0.95,length.out=levels) # % FCF for monogastric meat (range based on papers in database)
-  # FCF_dairy <- seq(0.5,0.95,length.out=levels) # % FCF for monogastric meat (range based on papers in database
-  
-  #FCF_eggs <- seq(0.8,0.95,length.out=levels) # % FCF for monogastric meat (range based on papers in database)
   
   ## 2.4 Other efficiency parameters
   
@@ -323,20 +256,8 @@ Diet_waste_final <- Diet_waste_change_all %>% # Adding levels as supply (full wa
   N_2050_levels <- data.frame(N_management,NUEinc,data.frame(NrecHousehold,NrecManure)) # Different efficiency and recycling combinations
   P_2050_levels <- data.frame(P_management,PUEinc,data.frame(PrecHousehold,PrecManure)) # Different efficiency and recycling combinations
   
-  #N_2050_levels = data.frame(NUEinc,NrecHousehold,NrecManure) %>% as_tibble(.name_repair = ~ c("NUEinc", "NrecHousehold","NrecManure")) %>% as.data.frame()
-  #P_2050_levels = data.frame(PUEinc,PrecHousehold,PrecManure) %>% as_tibble(.name_repair = ~ c("PUEinc","PrecHousehold","PrecManure")) %>% as.data.frame()
+  WPinc <- seq(0,0.15,length.out=levels) # Based on levels in the database and UNEP GEO-6 
   
-  # valid_column_names <- make.names(names=names(N_2050_levels), unique=TRUE, allow_ = TRUE)
-  # names(N_2050_levels) <- valid_column_names
-  # 
-  # valid_column_names <- make.names(names=names(P_2050_levels), unique=TRUE, allow_ = TRUE)
-  # names(P_2050_levels) <- valid_column_names
-  
-  WPinc <- seq(0,0.30,length.out=levels) # Based on levels in the database and UNEP GEO-6 
-  
-  Organic <- seq(0,0.09,length.out=levels) # % Organic increase
-  
-  #Disruptive <- as.factor(c("Yes","No")) # Disruptive or highly intensive livestock production
   GHG_eff_all <- seq(0,0.30,length.out= levels) # From no action to $200t price for carbon mitigation (Source: Lucas et al. 2007)
   GHG_eff_CH4 <- seq(0,0.40,length.out= levels) # Up to mitigation equivalent with scenarios with $200/tC - feasibility according to Roe et al. (2021): https://onlinelibrary.wiley.com/doi/full/10.1111/gcb.15873
   GHG_eff_N2O <- seq(0,0.12,length.out= levels) # Up to mitigation equivalent with scenarios with $200/tC - feasibility according to Roe et al. (2021): https://onlinelibrary.wiley.com/doi/full/10.1111/gcb.15873
@@ -344,15 +265,14 @@ Diet_waste_final <- Diet_waste_change_all %>% # Adding levels as supply (full wa
   
   ## 3. Generate scenario prediction list with all predictors and their mitigation levels
  
-  Pred_dataset <- list(Population=Pop_2050_levels,
+  Pred_dataset <- list(Population=Pop_2050_levels %>% round(3),
                         Diet = Diet_waste_final,
                         FCR_FCF = FCR_FCF_2050_levels,
                         Yield = Yield_2050_levels,
                         Water = data.frame(WPinc),
                         GHG = data.frame(GHG_eff_all,GHG_eff_CH4,GHG_eff_N2O,C_price),
                         Nitrogen = N_2050_levels,
-                        Phosphorus = P_2050_levels,
-                        Organic = data.frame(Organic))
+                        Phosphorus = P_2050_levels)
   
   # Writing final dataset
 

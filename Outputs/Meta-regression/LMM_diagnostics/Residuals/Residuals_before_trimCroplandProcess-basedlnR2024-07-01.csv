@@ -1,0 +1,52 @@
+"","Study","ScenYear","Model","Scope","Scenario..author.code.","Cropland.scope","Initial_condition","Delta_initial","Cropland","All_crop_feed","All_plant_food","Yield"
+"2","Bajzelj et al. (2014)",2050,"Bajzelj et al. (2014)","Agriculture","CT2","Agriculture",1560,35,0.207639364778245,1.16021512048005,0.424676804851153,0.157894736842105
+"3","Bajzelj et al. (2014)",2050,"Bajzelj et al. (2014)","Agriculture","CT3","Agriculture",1560,35,0.154150679827258,0.615498124247747,0.326936760584516,0.105263157894737
+"4","Bajzelj et al. (2014)",2050,"Bajzelj et al. (2014)","Agriculture","YG1","Agriculture",1560,35,0.0500104205746612,1.44365228808232,0.497699244953922,0.894736842105263
+"6","Bajzelj et al. (2014)",2050,"Bajzelj et al. (2014)","Agriculture","YG3","Agriculture",1560,35,-0.129875081421412,0.615498124247747,0.326936760584516,0.815789473684211
+"9","Bajzelj et al. (2014)",2050,"Bajzelj et al. (2014)","Agriculture","CT1 - SY","Agriculture",1560,35,0.693147180559945,1.44365228808232,0.497699244953922,0
+"11","Bajzelj et al. (2014)",2050,"Bajzelj et al. (2014)","Agriculture","CT1 - IT","Agriculture",1560,35,0.325422400434628,1.44365228808232,0.497699244953922,0.210526315789474
+"12","Bajzelj et al. (2014)",2050,"Bajzelj et al. (2014)","Agriculture","YG1 - NUE","Agriculture",1560,35,0.0500104205746612,1.44365228808232,0.497699244953922,0.894736842105263
+"13","CIRAD (2016)",2050,"GlobAgri-AgT","Agriculture","Metropolitization_Ultrap","Agriculture",1535.37,10.3699999999999,0.14698204977839,0.189720151114212,0.621264009870093,0.437185929648241
+"14","CIRAD (2016)",2050,"GlobAgri-AgT","Agriculture","Metropolitization_Animp","Agriculture",1535.37,10.3699999999999,0.339214205819281,0.822238318732504,0.521019659277793,0.457286432160804
+"17","CIRAD (2016)",2050,"GlobAgri-AgT","Agriculture","Healthy_C","Agriculture",1535.37,10.3699999999999,-0.0372361917637322,0.175405334731796,0.464745908326201,0.231155778894472
+"18","CIRAD (2016)",2050,"GlobAgri-AgT","Agriculture","Healthy_D","Agriculture",1535.37,10.3699999999999,0.0320464242341258,0.17441225253378,0.464946515126509,0.153266331658291
+"20","CIRAD (2016)",2050,"GlobAgri-AgT","Agriculture","Communities_collapse","Agriculture",1535.37,10.3699999999999,0.308603175796555,0.0281569215539055,0.291930739996779,-0.0226130653266331
+"178","Clark et al. (2020)",2050,"Clark et al. (2020)","Food","Converge_2050+Diet Intensity Slider 0%+Medium_Fertility+Efficiency Slider 100%+Efficiency_Increased_040%+100% To Max Yields + 50% from BAU trends+Waste_Reduced_50%+Waste Slider 100%","Food crops",1525,-2.27373675443232e-13,-1.02269900206389,1.2052136397601,0.352011408937093,1.77302599770057
+"181","Clark et al. (2020)",2050,"Clark et al. (2020)","Food","Converge_2050+Diet Intensity Slider 50%+Medium_Fertility+Efficiency Slider 100%+Efficiency_Increased_040%+100% To Max Yields + 50% from BAU trends+Waste_Reduced_50%+Waste Slider 100%","Food crops",1525,-2.27373675443232e-13,-1.20017263957172,0.415328664952165,0.363681085501734,1.77302599770057
+"185","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","BAU","Agriculture",1429.7969100368,-95.2030899631961,0.511562252565196,0.789686253966565,0.548581554140418,0
+"186","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","(+Waste)","Agriculture",1429.7969100368,-95.2030899631961,0.380364631728159,0.605618229015493,0.387307204693961,0
+"187","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","(+Diet)","Agriculture",1429.7969100368,-95.2030899631961,0.211711154676902,-0.0980362480850276,0.747332141530787,0
+"189","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","(+Yield)","Agriculture",1429.7969100368,-95.2030899631961,0.0969883215292513,0.789686253966565,0.548581554140418,0.5
+"190","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","(+Volat)","Agriculture",1429.7969100368,-95.2030899631961,0.51156224750009,0.789686253966565,0.548581554140418,0
+"191","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","(+Loss)","Agriculture",1429.7969100368,-95.2030899631961,0.51156224750009,0.789686253966565,0.548581554140418,0
+"192","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","(+All)","Agriculture",1429.7969100368,-95.2030899631961,-0.345778755573821,-0.395660230181961,0.557994025442972,0.5
+"290","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","INT HD + PASTURE","Agriculture",1560,35,0.578380661759478,-0.346707308769727,0.407516292302009,0.0431856224990232
+"291","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","IDP PD + PASTURE","Agriculture",1560,35,0.6777474587981,-0.359973498671578,0.500065574761508,0
+"292","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","IDP HD + PASTURE","Agriculture",1560,35,0.570876991374742,-0.395421256607247,0.407516292302009,0.0431856224990232
+"293","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","IDA PD + PASTURE","Agriculture",1560,35,0.714561326671699,-0.359973498671578,0.500065574761508,0
+"294","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","IDA HD + PASTURE","Agriculture",1560,35,0.645275623232942,-0.395421256607247,0.407516292302009,0.0431856224990232
+"295","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","ART PD + PASTURE","Agriculture",1560,35,0.196505369177256,-0.453110766558552,0.500065574761508,0
+"297","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","PBE PD + PASTURE","Agriculture",1560,35,0.383707426422889,-1,0.82712496367842,0
+"307","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","WR: ART PD + PASTURE","Agriculture",1560,35,0.0116317744511511,-0.494424686399231,0.418891657663435,0
+"308","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","WR: ART HD + PASTURE","Agriculture",1560,35,0.0351589565290398,-0.523582573416869,0.322208277512408,0.0431856224990232
+"309","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","WR: PBE PD + PASTURE","Agriculture",1560,35,0.20381845197255,-1,0.724477264664653,0
+"310","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","WR: PBE HD + PASTURE","Agriculture",1560,35,0.17941207620002,-1,0.531561644333515,0.0431856224990232
+"311","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","WR: EL PD + PASTURE","Agriculture",1560,35,0.118683718209161,-1,0.516890153155653,0
+"312","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","WR: EL HD + PASTURE","Agriculture",1560,35,0.159832442746953,-1,0.417347778868509,0.0431856224990232
+"313","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","YGR: INT PD + PASTURE","Agriculture",1560,35,0.213886838301082,0.0583508568582627,0.500065574761508,0.678530729004408
+"314","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","YGR: INT HD + PASTURE","Agriculture",1560,35,0.150460732130204,-0.346707308769727,0.407516292302009,0.719233370307219
+"315","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","YGR: IDP PD + PASTURE","Agriculture",1560,35,0.235419856600034,-0.359973498671578,0.500065574761508,0.678530729004408
+"316","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","YGR: IDP HD + PASTURE","Agriculture",1560,35,0.143342880692751,-0.395421256607247,0.407516292302009,0.719233370307219
+"317","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","YGR: IDA PD + PASTURE","Agriculture",1560,35,0.274728170132301,-0.359973498671578,0.500065574761508,0.678530729004408
+"318","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","YGR: IDA HD + PASTURE","Agriculture",1560,35,0.218091889018028,-0.395421256607247,0.407516292302009,0.719233370307219
+"319","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","YGR: ART PD + PASTURE","Agriculture",1560,35,-0.261940085072229,-0.453110766558552,0.500065574761508,0.678530729004408
+"330","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","YGR+WR IDA HD + PASTURE","Agriculture",1560,35,-0.0163603280232852,-0.442790403003685,0.322208277512408,0.719233370307219
+"331","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","YGR+WR ART PD + PASTURE","Agriculture",1560,35,-0.454744500084252,-0.494424686399231,0.418891657663435,0.678530729004408
+"332","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","YGR+WR ART HD + PASTURE","Agriculture",1560,35,-0.389153037491873,-0.523582573416869,0.322208277512408,0.719233370307219
+"333","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","YGR+WR PBE PD + PASTURE","Agriculture",1560,35,-0.260121700573703,-1,0.724477264664653,0.678530729004408
+"335","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","YGR+WR EL PD + PASTURE","Agriculture",1560,35,-0.343976792015909,-1,0.516890153155653,0.678530729004408
+"337","Searchinger et al. (2018)",2050,"GlobAgri-WRR","Agriculture","No productivity gains after 2010","Agriculture",1547,22,0.524181414947546,0.742847937815802,0.531476173363463,0
+"339","Searchinger et al. (2018)",2050,"GlobAgri-WRR","Agriculture","Coordinated effort","Agriculture",1547,22,0.00258231260347269,0.558610107760094,0.465189716072132,0.245996751353849
+"340","Searchinger et al. (2018)",2050,"GlobAgri-WRR","Agriculture","Highly ambitious","Agriculture",1547,22,-0.123699013849117,0.439345092280652,0.410726361727217,0.318432671081678
+"341","Searchinger et al. (2018)",2050,"GlobAgri-WRR","Agriculture","Breakthrough technologies","Agriculture",1547,22,-0.260685002947771,0.391723999484491,0.367246459060557,0.469922737306843
+"416","Springmann et al. (2018)",2050,"EAT-Lancet","Food","TECH_p + QW + BAU + SSP3","Food crops",1525,0,-0.379650701453697,0.639813974948365,0.467298594844094,0.529577464788732

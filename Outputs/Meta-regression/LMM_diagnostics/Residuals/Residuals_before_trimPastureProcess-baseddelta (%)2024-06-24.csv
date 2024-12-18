@@ -1,0 +1,17 @@
+"","Study","ScenYear","Model","Scope","Scenario..author.code.","Pasture.scope","Initial_condition","Delta_initial","Pasture","Rum_feed_grass","Pasture_yield"
+"3","Bajzelj et al. (2014)",2050,"Bajzelj et al. (2014)","Agriculture","CT3","FAO - Permanent meadows and pastures",3280,20.9999999999995,-0.225609756097561,0.240252772884584,0.912261008261548
+"14","CIRAD (2016)",2050,"GlobAgri-AgT","Agriculture","Communities_collapse","FAO - Permanent meadows and pastures",3337.74,78.7399999999998,0.436933374079467,0.167678367364904,-0.0769031979218352
+"15","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","BAU","FAO - Permanent meadows and pastures",3306.56753465931,47.5675346593061,0.781589520534003,0.793184474574322,-0.0254559900802865
+"16","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","(+Waste)","FAO - Permanent meadows and pastures",3306.56753465931,47.5675346593061,0.59229300925875,0.606863804287024,-0.022726745111513
+"17","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","(+Diet)","FAO - Permanent meadows and pastures",3306.56753465931,47.5675346593061,-0.0918291427976461,-0.0950371310483376,-0.0334426560874318
+"19","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","(+Yield)","FAO - Permanent meadows and pastures",3306.56753465931,47.5675346593061,0.187726347022668,0.793184474574322,0.46181601487957
+"20","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","(+Volat)","FAO - Permanent meadows and pastures",3306.56753465931,47.5675346593061,0.781589520534003,0.793184474574322,-0.0254559900802865
+"21","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","(+Loss)","FAO - Permanent meadows and pastures",3306.56753465931,47.5675346593061,0.781589520534003,0.793184474574322,-0.0254559900802865
+"22","Conijn et al. (2018)",2050,"BIOSPACS","Agriculture","(+All)","FAO - Permanent meadows and pastures",3306.56753465931,47.5675346593061,-0.595549096882483,-0.394682002175989,0.935233110177185
+"112","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","INT HD + PASTURE","FAO - Permanent meadows and pastures",3280,20.9999999999995,-0.560975609756098,-0.606786513675134,0.597977872300629
+"120","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","WR: INT HD + PASTURE","FAO - Permanent meadows and pastures",3280,20.9999999999995,-0.65030487804878,-0.667871014169647,0.89889010063041
+"128","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","YGR: INT HD + PASTURE","FAO - Permanent meadows and pastures",3280,20.9999999999995,-0.560975609756098,-0.606786513675134,0.597977872300629
+"136","Roos et al. (2017) with pasture",2050,"Roos et al. (2017) with pasture","Agriculture","YGR+WR INT HD + PASTURE","FAO - Permanent meadows and pastures",3280,20.9999999999995,-0.65030487804878,-0.667871014169647,0.89889010063041
+"143","Searchinger et al. (2018)",2050,"GlobAgri-WRR","Agriculture","No productivity gains after 2010","FAO - Permanent meadows and pastures",3322,63,0.661950632149308,0.809348775514868,0.03436120896145
+"146","Searchinger et al. (2018)",2050,"GlobAgri-WRR","Agriculture","Highly ambitious","FAO - Permanent meadows and pastures",3322,63,-0.117399157134257,0.100253335592527,0.691071246890585
+"147","Searchinger et al. (2018)",2050,"GlobAgri-WRR","Agriculture","Breakthrough technologies","FAO - Permanent meadows and pastures",3322,63,-0.134256472004816,0.0748569572058038,0.672997951554076

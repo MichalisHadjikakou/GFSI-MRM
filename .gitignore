@@ -1,13 +1,32 @@
 
+Input_data/Planetary_boundaries/1668008312256-AR6_Scenarios_Database_World_v1.1.csv.zip
 Input_data/Planetary_boundaries/1648976687084-AR6_Scenarios_Database_World_v1.0.zip
 Input_data/Planetary_boundaries/iamc15_scenario_data_world_r2.0.xlsx
+Input_data/Archive/
 Outputs/Risk_estimates/
-Outputs/Pareto_analysis+plots/All_merged_scenarios_23-02-07.csv
-Outputs/Pareto_analysis+plots/All_merged_scenarios_23-03-21.csv
+Outputs/Pareto_analysis+plots/
 Outputs/Meta-regression/Predictions/
+Outputs/Composite_barplots/Archive/
+Outputs/Meta-regression/Cross_validation/Archive/
+Outputs/Meta-regression/Exploratory_plots/
+Outputs/Meta-regression/LMM_diagnostics/Residuals/Archive/
+Outputs/Meta-regression/LMM_diagnostics/VIFs/Archive/
 Outputs/Meta-regression/LMM_diagnostics/Random_effects/
 Outputs/Meta-regression/LMM_diagnostics/Fixed_effects/
-Outputs/Meta-regression/LMM_diagnostics/Drop1/
+Outputs/Meta-regression/LMM_diagnostics/Drop1/Archive/
 Outputs/Meta-regression/Fitted_models/Datasets/Archive/
 Outputs/Meta-regression/Fitted_models/Models/Archive/
+Outputs/Meta-regression/Model_summaries/Archive/
 Scripts/Archive/
+Functions/Archive/
+
+# RStudio files
+.Rproj.user/
+
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RData
+.RDataTmp

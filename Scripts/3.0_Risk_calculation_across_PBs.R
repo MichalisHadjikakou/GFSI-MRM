@@ -1,59 +1,60 @@
-#################### CALCULATING AVERAGE PB VALUES AND RISK ACROSS INDICATORS ##################################
+#################### CALCULATING AVERAGE VALUES AND RISK ACROSS INDICATORS ##################################
 
 ## Author: Michalis Hadjikakou, Deakin University
 ## Purpose: Calculating average risk across boundaries based on predictions for each individual indicator
 
 ################################################# 1.0 INITIALISING #####################################################
 
+# 1.1  Loading necessary packages and functions
+
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(here,data.table,tidyverse,fitdistrplus,propagate,extraDistr,distr,future.apply,merTools,readxl)
+
 ## 1.1  Setting up modelling parameters and working directories
-rm(list = ls())
-PC <- 'denethor'
 
-if(PC=='work_laptop') {
-  setwd("C:/Users/Hadj/OneDrive - Deakin University/Michalis_Brett/Future_food_systems_review/GFSS-MM/")
-} else if (PC =='analytix') {
-  setwd("M:/Food-Systems/Meta_analysis/")
-} else if (PC =='denethor') {
-  setwd("//school-les-m.shares.deakin.edu.au/school-les-m/Planet-A/Food-Systems/Meta_analysis/GFSI-MRM/GFSI-MRM/")
-} else {
-  setwd("C:/Users/Michalis/OneDrive - Deakin University/Michalis_Brett/Future_food_systems_review/GFSS-MM/")  
-}
-
-simdate <- "2023-03-21"# Folder date
-simdate_LUC <- "2022-05-16" # For LUC model which is fitted in this script
-simdate_models <- "2023-03-15"
+simdate <- "2024-08-04"# Folder date
+simdate_LUC <- "2024-07-01" # For LUC model which is fitted in this script
+simdate_models <- "2024-07-01"
 n <- 10000 # Number of random draws
 Nsim <- 2000 # Number of bootstraps
-#future::availableCores()
-
 Base_year <- 2010
 Scen_year <- 2050 
-#LUC_rate_year <- 2050
 LUC_rate_year <- mean(c(Base_year,Scen_year))# Mid-point between 2010 and 2050 to reflect changing dynamics of land use for snapshot analysis
-Cropland_base <- 1519 # Source: FAOSTAT Cropland in base year
-Pasture_base <- 3277 # Source: FAO - Permanent meadows and pastures in base year
-LUC_base <- mean(c(4300,5500)) # Source: UNFCCC: https://unfccc.int/topics/land-use/the-big-picture/introduction-to-land-use, Units: Mt CO2
 Carbon_price <- c(0,25,100,200) # Carbon price scenario price range based on IPCC AR6 WGIII: https://report.ipcc.ch/ar6wg3/pdf/IPCC_AR6_WGIII_SummaryForPolicymakers.pdf (Figure SPM.7: Overview of mitigation options and their estimated ranges of costs and potentials in 2030.)
+GWP_CH4 <- 27.2 #AR6, 27.2 (non-fossil origin)
+GWP_N2O <- 273 # AR6, 273 (updated N2O factor)
 
-# 1.2 Reading necessary files
+LUC_base <- read.csv("Outputs/Base_year_harmonisation/Base_year_comparison_with_CO2_LUC.csv") %>% # Mean LUC CO2 emissions for 2010 based on AR6 (see script 0.0a)
+  filter(Indicator=="CO2 LUC",Database=="IPCC AR6 v1.1") %>% 
+  pull(Mean)
+
+# 1.2 Reading necessary files and additional parameters
+
+Base_year_data <- readxl::read_xlsx(here("Input_data/Base_year_values.xlsx"))
+Cropland_base <- Base_year_data %>% filter(Indicator=="Cropland") %>% pull(Value)
+Pasture_base <- Base_year_data %>% filter(Indicator=="Pasture") %>% pull(Value)
 
 All_predictions <- list.files(paste0("Outputs/Meta-regression/Predictions/All_models_",simdate,"/")) # All predictions
 
 PBs <- read.csv("Outputs/Environmental_limits/All_PB_limits.csv")
 
-# 1.3  Loading necessary packages and functions
+# 1.3 Setting up multicore analysis
 
-if (!require("pacman")) install.packages("pacman")
-pacman::p_load(data.table,tidyverse,fitdistrplus,propagate,extraDistr,distr,future.apply,merTools,readxl)
-
-plan(multisession, workers = 50)
+#future::availableCores() # to check the number of cores
+plan(multisession, workers = 46)
 
 # Composite boundaries - derived using PB_distributions_2050 script
 
-CC_2050_bound <- data.frame(Mean=PBs %>% filter(Indicator=="DirNonCO2LUC") %>% pull(Mode), 
-                            SD = sum(PBs %>% filter(Indicator=="DirNonCO2LUC") %>% pull(Max) - PBs %>% filter(Indicator=="DirNonCO2LUC") %>% pull(Mode))/2) # 2050 boundaries for climate change 
+CC_2050_bound <- PBs %>% # 2050 boundaries for land-system change (cropland + pasture total)- in Mha based on assumptions explained in article SM
+  filter(Indicator=="DirNonCO2LUC") %>% 
+  dplyr::select(Min,Mode,Max) 
+  
 # Based on 2050 1.5C trajectories in IAMC 2.0 database (see 'All_boundary_distributions_2050.R' script) - AR5 GWPs
-LSS_2050_bound <- data.frame(Min=3019,Mode=3309,Max=5460) # 2050 boundaries for land-system change (cropland + pasture total)- in Mha based on assumptions explained in article SM
+
+LSS_2050_bound <- PBs %>% # 2050 boundaries for land-system change (cropland + pasture total)- in Mha based on assumptions explained in article SM
+  filter(Indicator=="TotalAgArea") %>% 
+  dplyr::select(Min,Mode,Max) %>% 
+  mutate_all(~.*100) # Converts all columns from km2 to hectares
 
 LUC_expansion <- 333 # t/ha (Mt/Mha) of average CO2 emissions per hectare of expansion (cropland or pasture) - Source: Clark et al., Science 370, 705-708 (2020)
 LUC_abandonment <- 211 # t/ha (Mt/Mha) of average CO2 emissions per hectare of abandonment (cropland or pasture) - Source: Clark et al., Science 370, 705-708 (2020)
@@ -62,7 +63,6 @@ LUC_abandonment <- 211 # t/ha (Mt/Mha) of average CO2 emissions per hectare of a
 
 
 ################################################# 2.0 TOTAL RISK CALCULATIONS FOR EACH PB #####################################################
-
 
 ## 2.1  Land-system change (Adding together cropland and pasture)
 Cropland <- fread(paste0("Outputs/Meta-regression/Predictions/All_models_",simdate,"/",All_predictions[grep("Cropland",All_predictions)])) # Loading cropland predictions
@@ -85,11 +85,10 @@ Total_Area <- Cropland %>%
                                         ifelse(Pred_avg >= Max,"RED",NA))))) %>% 
   mutate(Pred_upr = Pred_avg+(2*Pred_SD),
          Pred_lwr = Pred_avg-(2*Pred_SD),
-         .after='Pred_avg')
-#mutate(Safe = ifelse(Risk > 0.2,"NO","YES")) %>% # Assuming 80% probability of meeting the boundary is acceptable 
-# rowwise() %>% 
-# mutate(Risk_Joint = sum((rnorm(n,Pred_avg,Pred_SD))>
-#                           (rtriang(n,Min,Max,Mode)))/n) 
+         .after='Pred_avg') %>% 
+  mutate(Risk_avg = ptriang(Pred_avg, a = Min, b = Max, c = Mode, lower.tail = TRUE, log.p = FALSE),
+         Risk_upr = ptriang(Pred_upr, a = Min, b = Max, c = Mode, lower.tail = TRUE, log.p = FALSE),
+         Risk_lwr = ptriang(Pred_lwr, a = Min, b = Max, c = Mode, lower.tail = TRUE, log.p = FALSE))
 
 Total_Area$Risk <- future_sapply(1:dim(Total_Area)[1],function(x) # Calculating risk in parallel - simulation to calculate intersection of two distributions
   sum((rnorm(n,Total_Area$Pred_avg[x],Total_Area$Pred_SD[x]))>
@@ -109,7 +108,10 @@ Water <- fread(paste0("Outputs/Meta-regression/Predictions/All_models_",simdate,
   mutate(RiskCol = ifelse(Pred_avg < Min,"GREEN", # Adding a risk colour for each Pred_avg
                           ifelse(Pred_avg >= Min & Pred_avg <= Mode,"YELLOW",
                                  ifelse(Pred_avg >= Mode & Pred_avg < Max,"ORANGE",
-                                        ifelse(Pred_avg >= Max,"RED",NA)))))
+                                        ifelse(Pred_avg >= Max,"RED",NA))))) %>% 
+  mutate(Risk_avg = ptriang(Pred_avg, a = Min, b = Max, c = Mode, lower.tail = TRUE, log.p = FALSE),
+         Risk_upr = ptriang(Pred_upr, a = Min, b = Max, c = Mode, lower.tail = TRUE, log.p = FALSE),
+         Risk_lwr = ptriang(Pred_lwr, a = Min, b = Max, c = Mode, lower.tail = TRUE, log.p = FALSE))
   
 Water$Risk <- future_sapply(1:dim(Water)[1],function(x) # Calculating risk in parallel - simulation to calculate intersection of two distributions
   sum((rnorm(n,Water$Pred_avg[x],Water$Pred_SD[x]))>
@@ -155,7 +157,6 @@ Pred_int <- suppressWarnings(predictInterval(merMod = glmm_global,
                                              level=0.95,
                                              include.resid.var = T,
                                              stat="mean",returnSims = FALSE)) 
-            #mutate(SD = ((fit-lwr)+(upr-fit))/2/2)
 
 # Attaching predictions to data.frame and calculating average distribution parameters
 pred_dist <- LUC_GHG$Land_scenarios %>% unique() # Prediction distributions
@@ -192,33 +193,31 @@ Final_LUC_estimates <- LUC_GHG %>% filter(Land_scenarios=="Average") %>%
 ## Adding up the distributions of all the greenhouse gas predictions (CH4, N2O & CO2) - using method 1
 
 NonCO2LUC <- CH4 %>% 
-  dplyr::select(System,Pop_levels,Diet,Vegetal_kcal_supply,Waste,Yield_levels,Feed_efficiency,Feed_composition,C_price,Organic,Pred_avg,Pred_upr,Pred_lwr) %>% 
+  dplyr::select(System,Pop_levels,Diet,Vegetal_kcal_supply,Waste,Yield_levels,Feed_efficiency,Feed_composition,C_price,Pred_avg,Pred_upr,Pred_lwr) %>% 
   dplyr::rename(Carbon_price=C_price,Pred_avg_CH4=Pred_avg,Pred_upr_CH4=Pred_upr,Pred_lwr_CH4=Pred_lwr,Plant_kcal = Vegetal_kcal_supply) %>% 
   cbind(N2O %>% dplyr::select(Pred_avg,Pred_upr,Pred_lwr) %>% 
           magrittr::set_colnames(c("Pred_avg_N2O","Pred_upr_N2O","Pred_lwr_N2O"))) %>% 
   mutate(SD_CH4 = ((Pred_avg_CH4-Pred_lwr_CH4)+(Pred_upr_CH4-Pred_avg_CH4))/2/2,
          SD_N2O =((Pred_avg_N2O-Pred_lwr_N2O)+(Pred_upr_N2O-Pred_avg_N2O))/2/2) %>% 
-  dplyr::filter(Organic==0) %>% dplyr::select(-Organic) %>% 
   left_join(Final_LUC_estimates,by=c("Pop_levels","Diet","Plant_kcal","Waste","Yield_levels","Feed_efficiency","Feed_composition","Carbon_price")) %>% # Ensuring compatibility
   add_column(CC_2050_bound) %>% # Adding boundary distribution properties
   add_column(Indicator="NonCO2+LUC",.after = "System") %>% 
-  mutate(Pred_avg = Pred_avg_CH4 + Pred_avg_N2O + Pred_avg_LUC, # Sum of means
-         Pred_SD = sqrt(SD_CH4^2 + SD_N2O^2 + SD_LUC^2)) %>% # Sum of variances of individual GHG predictions
-  mutate(RiskCol = ifelse(Pred_avg < Mean-(2*SD),"GREEN", # Adding a risk colour for each Pred_avg
-                          ifelse(Pred_avg >= Mean-(2*SD) & Pred_avg <= Mean,"YELLOW",
-                                 ifelse(Pred_avg >= Mean & Pred_avg < Mean+(2*SD),"ORANGE",
-                                        ifelse(Pred_avg >= Mean+(2*SD),"RED",NA)))))
-#If distribution is triangular:
-  # mutate(RiskCol = ifelse(Pred_avg < Min,"GREEN", # Adding a risk colour for each Pred_avg
-  #                       ifelse(Pred_avg >= Min & Pred_avg <= Mode,"YELLOW",
-  #                              ifelse(Pred_avg >= Mode & Pred_avg < Max,"ORANGE",
-  #                                     ifelse(Pred_avg >= Max,"RED",NA))))) 
+  mutate(Pred_avg = Pred_avg_CH4*GWP_CH4 + Pred_avg_N2O*GWP_N2O + Pred_avg_LUC, # Sum of means
+         Pred_SD = sqrt(SD_CH4*GWP_CH4^2 + SD_N2O*GWP_N2O^2 + SD_LUC^2)) %>% # Sum of variances of individual GHG predictions
+  mutate(RiskCol = ifelse(Pred_avg < Min,"GREEN", # Adding a risk colour for each Pred_avg
+                          ifelse(Pred_avg >= Min & Pred_avg <= Mode,"YELLOW",
+                                 ifelse(Pred_avg >= Mode & Pred_avg < Max,"ORANGE",
+                                        ifelse(Pred_avg >= Max,"RED",NA))))) %>%
+  mutate(Pred_upr = Pred_avg+(2*Pred_SD),
+         Pred_lwr = Pred_avg-(2*Pred_SD),
+         .after='Pred_avg') %>% 
+  mutate(Risk_avg = ptriang(Pred_avg, a = Min, b = Max, c = Mode, lower.tail = TRUE, log.p = FALSE),
+         Risk_upr = ptriang(Pred_upr, a = Min, b = Max, c = Mode, lower.tail = TRUE, log.p = FALSE),
+         Risk_lwr = ptriang(Pred_lwr, a = Min, b = Max, c = Mode, lower.tail = TRUE, log.p = FALSE))
 
 NonCO2LUC$Risk <- future_sapply(1:dim(NonCO2LUC)[1],function(x) # Calculating risk in parallel - simulation to calculate intersection of two distributions
   sum((rnorm(n,NonCO2LUC$Pred_avg[x],NonCO2LUC$Pred_SD[x]))>
-        (rnorm(n,NonCO2LUC$Mean[x],NonCO2LUC$SD[x])))/n,future.seed = TRUE)
-#If distribution is triangular:
-        #(rtriang(n,NonCO2LUC$Min[x],NonCO2LUC$Max[x],NonCO2LUC$Mode[x])))/n,future.seed = TRUE)
+        (rtriang(n,NonCO2LUC$Min[x],NonCO2LUC$Max[x],NonCO2LUC$Mode[x])))/n,future.seed = TRUE)
 
 fwrite(NonCO2LUC,paste0("Outputs/Risk_estimates/Climate_Change_",Sys.Date(),".csv")) # Water use efficiency kept as quantitative
 
@@ -235,51 +234,24 @@ fwrite(LUC_indicator_results,paste0("Outputs/Meta-regression/Predictions/All_mod
 
 ## 2.4  Biogeochemical flows (Taking the average/max risk across all indicators?) 
 
-N_indicators <- c("Nfert","Nsurplus")
-P_indicators <- c("Pfert","Psurplus")
+N_indicators <- c("Nfert")
+P_indicators <- c("Pfert")
 All_nutrients <- c(N_indicators,P_indicators) # String with all biogeochemical flow indicators
 
 Nutrients <- future_lapply(seq_along(All_nutrients),function(x)
   fread(paste0("Outputs/Meta-regression/Predictions/All_models_",simdate,"/",All_predictions[grep(All_nutrients[x],All_predictions)])))
-  
-# Fractions to use in estimating mean/upper/lower predictions for delivery/export
-
-fr_mouth_river <- 0.413 # Fraction of P river load that becomes P export at mouth of river (average of SSP1-5 from Beusen et al. 2022, GEC)
-fr_mouth_river_low <- 0.403
-fr_mouth_river_high <- 0.418
-
-fr_runoff_surplus <- 0.435  # Fraction of P surplus that becomes runoff (average of SSP1-5 from Beusen et al. 2022, GEC)
-fr_runoff_surplus_low <- 0.3438 # Lowest fraction across SSPs 
-fr_runoff_surplus_high <- 0.5097 # Highest fraction across SSPs
-
-# Converting surplus to runoff/load estimates and inserting back to main nutrients list
-
-# Pexport <- Nutrients[[which(All_nutrients=="Psurplus")]] %>% # Selecting Psurplus only
-#   data.frame() %>% 
-#   mutate(Pred_avg = Pred_avg*fr_runoff_surplus*fr_mouth_river, # Calculating estimates of ocean P export
-#          Pred_upr = Pred_upr*fr_runoff_surplus_high*fr_mouth_river_high,
-#          Pred_lwr = Pred_lwr*fr_mouth_river_low*fr_mouth_river_low) %>% 
-#   mutate(Indicator="Pexport")       
-
-Pinstream <- Nutrients[[which(All_nutrients=="Psurplus")]] %>% # Selecting Psurplus only
-  data.frame() %>% 
-  mutate(Pred_avg = ((Pred_avg*fr_runoff_surplus)+(Pred_avg*fr_runoff_surplus*fr_mouth_river))/2, # Calculating estimates of ocean P export
-         Pred_upr = ((Pred_upr*fr_runoff_surplus_high)+(Pred_upr*fr_runoff_surplus_high*fr_mouth_river_high))/2,
-         Pred_lwr = ((Pred_lwr*fr_mouth_river_low)+(Pred_lwr*fr_mouth_river_low*fr_mouth_river_low))/2) %>% 
-  mutate(Indicator="Pinstream") 
-
-Nutrients[[which(All_nutrients=="Psurplus")]] <- Pinstream # Adding it back
 
 Nutrients <- Nutrients %>%  
   purrr::reduce(full_join) %>% 
-  #dplyr::filter(Organic==0) %>% # Only choosing 0 organic (Organic not fitted as a predictor - the rest of the rows are replicates)
-  #dplyr::select(-Organic) %>% 
   mutate(Pred_SD = ((Pred_avg-Pred_lwr)+(Pred_upr-Pred_avg))/2/2) %>%  # Calculating standard deviations (to be used for risk estimates)
   left_join(PBs,by="Indicator") %>% 
   mutate(RiskCol = ifelse(Pred_avg < Min,"GREEN", # Adding a risk colour for each Pred_avg
                           ifelse(Pred_avg >= Min & Pred_avg <= Mode,"YELLOW",
                                  ifelse(Pred_avg >= Mode & Pred_avg < Max,"ORANGE",
-                                        ifelse(Pred_avg >= Max,"RED",NA)))))
+                                        ifelse(Pred_avg >= Max,"RED",NA))))) %>% 
+  mutate(Risk_avg = ptriang(Pred_avg, a = Min, b = Max, c = Mode, lower.tail = TRUE, log.p = FALSE),
+         Risk_upr = ptriang(Pred_upr, a = Min, b = Max, c = Mode, lower.tail = TRUE, log.p = FALSE),
+         Risk_lwr = ptriang(Pred_lwr, a = Min, b = Max, c = Mode, lower.tail = TRUE, log.p = FALSE))
 
 Nutrients$Risk <- future_sapply(1:dim(Nutrients)[1],function(x) # Calculating risk in parallel - simulation to calculate intersection of two distributions
   sum((rnorm(n,Nutrients$Pred_avg[x],Nutrients$Pred_SD[x]))>
@@ -288,25 +260,27 @@ Nutrients$Risk <- future_sapply(1:dim(Nutrients)[1],function(x) # Calculating ri
 Pooled_N <- Nutrients %>%  
   dplyr::filter(Indicator %in% N_indicators) %>% 
   dplyr::select(System,Indicator,Pop_levels,Diet,Vegetal_kcal_supply,Waste,Yield_levels,Feed_efficiency,Feed_composition,N_management,
-                Pred_avg:RiskCol,Pred_SD,Risk) %>% 
+                Pred_avg:Pred_SD,Min:Max,Risk_avg:Risk) %>% 
   dplyr::rename(Plant_kcal = Vegetal_kcal_supply) %>% 
-  mutate(System = "Biogeochemical Flows N")
-   
-P_indicators <- c("Pfert","Pinstream") # Replacing surplus with Pinstream
+  mutate(System = "Biogeochemical Flows N") %>% 
+  arrange(Pop_levels,Diet,Plant_kcal,Waste,Yield_levels,Feed_efficiency,Feed_composition)
 
 Pooled_P <- Nutrients %>%  
   dplyr::filter(Indicator %in% P_indicators) %>% 
   dplyr::select(System,Indicator,Pop_levels,Diet,Vegetal_kcal_supply,Waste,Yield_levels,Feed_efficiency,Feed_composition,P_management,
-                Pred_avg:RiskCol,Pred_SD,Risk) %>% 
+                Pred_avg:Pred_SD,Min:Max,Risk_avg:Risk) %>% 
   dplyr::rename(Plant_kcal = Vegetal_kcal_supply) %>% 
-  #mutate(P_management = dplyr::recode(P_management,`+5% PUE,+60% REC`="+15% PUE,+60% REC")) %>%  # Recoding to correct typo
-  mutate(System = "Biogeochemical Flows P")
+  mutate(System = "Biogeochemical Flows P") %>% 
+  arrange(Pop_levels,Diet,Plant_kcal,Waste,Yield_levels,Feed_efficiency,Feed_composition)
 
 # Average risk for all nutrients 
 Pooled_Nutrients <- Pooled_N %>%
   mutate(System="Biogeochemical Flows") %>% 
   dplyr::select(-Indicator) %>% 
-  mutate(Risk = (Pooled_N$Risk+Pooled_P$Risk)/2) # Calculating average of N and P risks - keeping in N strategy
+  mutate(Risk_avg = (Pooled_N$Risk_avg+Pooled_P$Risk_avg)/2,
+         Risk_upr = (Pooled_N$Risk_upr+Pooled_P$Risk_upr)/2,
+         Risk_lwr = (Pooled_N$Risk_lwr+Pooled_P$Risk_lwr)/2,
+         Risk = (Pooled_N$Risk+Pooled_P$Risk)/2) # Calculating average of N and P risks - keeping in N strategy
 
 # Writing results
 fwrite(Pooled_N,paste0("Outputs/Risk_estimates/Biogeochemical_Flows_N_",Sys.Date(),".csv")) 

@@ -7,27 +7,13 @@
 
 #### 1.0 INITIALISATION ####
 
-## 1.1 Loading working directory
-
-PC <- "denethor"
-
-if(PC=='work_laptop') {
-  setwd("C:/Users/Hadj/OneDrive - Deakin University/Michalis_Brett/Future_food_systems_review/GFSS-MM/")
-} else if (PC =='analytix') {
-  setwd("M:/Food-Systems/Meta_analysis/")
-} else if (PC =='denethor') {
-  setwd("//school-les-m.shares.deakin.edu.au/school-les-m/Planet-A/Food-Systems/Meta_analysis/GFSI-MRM/GFSI-MRM/")
-} else {
-  setwd("C:/Users/Michalis/OneDrive - Deakin University/Michalis_Brett/Future_food_systems_review/GFSS-MM/")  
-}
-
-## 1.2  Loading necessary packages and functions
+## 1.1  Loading necessary packages and functions
 
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(gridExtra,car,MASS,outliers,sjPlot,lme4,AICcmodavg,jtools,lmerTest,glmmTMB,ggpubr,
                LMERConvenienceFunctions,MuMIn,fitdistrplus,merTools,eatGet,tidyverse,pbkrtest,future.apply,Amelia,readxl,writexl,
                performance,hablar,reshape2,cowplot,DHARMa,predictmeans,remotes,robustlmm,cvms,ggeffects,
-               groupdata2,caret,brms,interactions,wppExplorer,wpp2019,DescTools)
+               groupdata2,caret,brms,interactions,wppExplorer,wpp2019,DescTools,here)
 
 # Please note that eatGet may require manual installation and also requires 'reshape2' - see https://rdrr.io/rforge/eatGet/
 #install.packages("eatGet", repos="http://R-Forge.R-project.org")
@@ -36,27 +22,21 @@ pacman::p_load(gridExtra,car,MASS,outliers,sjPlot,lme4,AICcmodavg,jtools,lmerTes
 
 `%notin%` <- Negate(`%in%`)
 diagnostic_plots <- 'yes'
-trim_outliers <- 'yes'
+trim_outliers <- 'no'
 ind <- "CO2_LUC"
 i <- 1
 j <- 1
 CV_reps <- 5 # Number of times to perform repeat cross-validation
-IAMC_database <- 'AR6' # OR change to 'AR6'
+IAMC_database <- 'AR6' # OR change to 'AR6' - note that AR6 used the latest version (v1.1) published in November 2023
 GWP_CH4 <- 27.2 #AR6, 27.2 (non-fossil origin)
 GWP_N2O <- 273/1000 # AR6, 273 (updated N2O factor)
-#LUC_base <- mean(c(4300,5500))
+base_year <- 2010
+end_year <- 2050
 currentDate <- Sys.Date()
 
-# Scenario family strings - allows selecting and fitting distributions for 1.5 and 2C seperately or together
+# Reading in dataset (either IAMC15 or AR6 v1.1- depending on what was selected above)
 
-# Scenario family strings - allows selecting and fitting distributions for 1.5 and 2C seperately or together
 if(IAMC_database=='iamc15') {
-  
-  # only_1.5 <- c("1.5C low overshoot","Below 1.5C","1.5C high overshoot")
-  # only_2 <- c("Higher 2C","Lower 2C")
-  # all <- c(only_1.5,only_2)
-  # 
-  # sel_scens <- all # Selecting 1.5oC and 2oC scenarios - modify accordingly
   
   variables_land <- c("Land Cover|Cropland","Land Cover|Pasture","Land Cover|Forest",
                       "Land Cover|Other Arable Land","Land Cover|Other Land","Land Cover|Other Natural Land",
@@ -67,12 +47,6 @@ if(IAMC_database=='iamc15') {
   non_CO2_cat <- c("Emissions|N2O|AFOLU","Emissions|CH4|AFOLU")
   
 }else{
-  
-  # only_1.5 <- c("C1: limit warming to 1.5°C (>50%) with no or limited overshoot")
-  # only_2 <- c("C3: limit warming to 2°C (>67%)")
-  # all <- c(only_1.5,only_2)
-  # 
-  # sel_scens <- all # Selecting only 1.5oC scenarios - modify accordingly
   
   variables_land <- c("Land Cover|Cropland","Land Cover|Pasture","Land Cover|Forest",
                       "Land Cover|Other Arable Land","Land Cover|Other Land",#"Land Cover|Other Natural Land", # Other natural land removed from AR6
@@ -86,9 +60,8 @@ if(IAMC_database=='iamc15') {
 
 if(IAMC_database=='iamc15') {
   
-  IAMC_data <- read_excel(path = "Input_data/Planetary_boundaries/iamc15_scenario_data_world_r2.0.xlsx",sheet = "data") #Reading all IPCC scenarios
-  metadata_IAMC_sel <- read_excel(path = "Input_data/Planetary_boundaries/sr15_metadata_indicators_r2.0.xlsx",sheet = "meta") %>%
-    filter(category %in% sel_scens) %>% # Selecting only 1.5 or only 2C scenarios
+  IAMC_data <- read_excel(path = here("Input_data/Planetary_boundaries/iamc15_scenario_data_world_r2.0.xlsx"),sheet = "data") #Reading all IPCC scenarios
+  metadata_IAMC_sel <- read_excel(path = here("Input_data/Planetary_boundaries/sr15_metadata_indicators_r2.0.xlsx"),sheet = "meta") %>%
     pull(scenario)
   
   year_prefix <- "" 
@@ -97,21 +70,15 @@ if(IAMC_database=='iamc15') {
   
 }else{
   
-  master <- as.character(unzip("Input_data/Planetary_boundaries/1648976687084-AR6_Scenarios_Database_World_v1.0.zip", list = TRUE)$Name)
-  # load the first file "file1.csv"
-  IAMC_data <- read.csv(unz("Input_data/Planetary_boundaries/1648976687084-AR6_Scenarios_Database_World_v1.0.zip", 
-                            "AR6_Scenarios_Database_World_v1.0.csv"), header = TRUE,
+  
+  IAMC_data <- read.csv(unz(here("Input_data/Planetary_boundaries/1668008312256-AR6_Scenarios_Database_World_v1.1.csv.zip"), 
+                            "AR6_Scenarios_Database_World_v1.1.csv"), header = TRUE,
                         sep = ",") 
   # Extracting metadata file
-  unzip(zipfile="Input_data/Planetary_boundaries/1648976687084-AR6_Scenarios_Database_World_v1.0.zip", files = "AR6_Scenarios_Database_metadata_indicators_v1.0.xlsx", 
-        exdir="Input_data/Planetary_boundaries/.")
-  
-  # metadata_IAMC <- read_excel(path = "Input_data/Planetary_boundaries/AR6_Scenarios_Database_metadata_indicators_v1.0.xlsx",sheet = "meta_Ch3vetted_withclimate") %>%
-  #   #filter(Category_name %in% sel_scens) %>% # Selecting only 1.5 or only 2C scenarios
-  #   pull(Scenario) %>% unique()
-  
-  metadata_IAMC_sel <- read_excel(path = "Input_data/Planetary_boundaries/AR6_Scenarios_Database_metadata_indicators_v1.0.xlsx",sheet = "meta_Ch3vetted_withclimate") %>%
-    #filter(Category_name %in% sel_scens) %>% # Selecting only 1.5 or only 2C scenarios
+  unzip(zipfile=here("Input_data/Planetary_boundaries/1668008312256-AR6_Scenarios_Database_World_v1.1.csv.zip"), files = "AR6_Scenarios_Database_metadata_indicators_v1.1.xlsx", 
+        exdir=here("Input_data/Planetary_boundaries/."))
+  # Selecting the key columns
+  metadata_IAMC_sel <- read_excel(path = here("Input_data/Planetary_boundaries/AR6_Scenarios_Database_metadata_indicators_v1.1.xlsx"),sheet = "meta_Ch3vetted_withclimate") %>%
     pull(Scenario) %>% unique()
   
   year_prefix <- "X"
@@ -120,14 +87,16 @@ if(IAMC_database=='iamc15') {
     filter(Scenario %in% metadata_IAMC_sel)
 }
 
-base_year <- 2010
-end_year <- 2050
+##  2.2 Reformatting data into right format for statistical analysis
+
+sel_models <- read.csv("Input_data/Planetary_boundaries/Selected_AR6_LUMs.csv") %>% # Choosing only partial equilibrium models with dynamic land use (see Guivarch et al. 2022, AR6)
+  filter(Included=="Y") %>% 
+  pull(Model)
+
 time_snapshot <- seq(base_year,end_year,5) %>% as.character() %>% paste0(year_prefix,.) # Timeseries until 2050 to reflect modelling period
 
-##  2.2 Reformatting data into right format for statistical analysis 
-
 data_AFOLU <- IAMC_all %>% # Reading all IPCC scenarios
-  #filter(Scenario %in% metadata_IAMC) %>% # Choosing appropriate scenarios
+  filter(Model %in% sel_models) %>% # Choosing only comprehensive land-use models 
   filter(Variable %in% c(variables_land,variables_GHG)) %>%  # Choosing all variables
   dplyr::select(Model,Scenario,Variable,Unit,time_snapshot) %>% # Selecting relevant columns only
   dplyr::select_if(function(x) !(all(is.na(x)))) %>% # Removing NA columns
@@ -140,36 +109,28 @@ delta_AFOLU <- data_AFOLU %>%
   pivot_wider(names_from = "Variable",values_from = value) %>% 
   group_by(Model,Scenario) %>% 
   dplyr::mutate(across(all_of(variables_land),~(.-lag(.))/5,.names="{col}_lag")) %>% # Calculating annual land use change
-  #dplyr::slice(-1) %>% # Remove first row (base year) of every group 
   magrittr::set_colnames(c("Model","Scenario","Year","CO2_LUC","Cropland","Forest","Other_arable","Pasture","Carbon_price",
                            "Natural_Forest","Other",#"Other_natural",
                            "CO2_Afforestation","Forest_afforestation",
                            "delta_Cropland","delta_Pasture","delta_Forest","delta_Other_arable","delta_Other",#"delta_Other_natural",
                            "delta_Natural_Forest","delta_Afforestation")) %>%
-  #mutate_at("Carbon_price", funs(c(dplyr::first(.), (. - dplyr::first(.))[-1])) )%>% # Calculating delta change in carbon price relative to base year
-  #mutate(across(c("Carbon_price"),~.-lag(.))) %>% # Calculating change in carbon price relative to previous year
   filter(Year %notin% base_year) %>% 
   mutate(delta_Other_all = rowSums(across(delta_Other_arable:delta_Other), na.rm = T)) %>% # Models treat this differently so adding it up
-  #mutate(delta_Other_all = rowSums(across(delta_Other_arable:delta_Other_natural), na.rm = T)) %>% # Models treat this differently so adding it up
-  mutate(TotalArea = delta_Cropland+delta_Pasture) %>% 
+  mutate(delta_Ag = delta_Cropland+delta_Pasture) %>% 
   mutate(CO2_LUC_net = case_when(CO2_Afforestation==0|is.na(CO2_Afforestation) ~ CO2_LUC,
                                  CO2_Afforestation!=0 ~ CO2_LUC-CO2_Afforestation)) %>% 
-  mutate(delta_Forest_net = delta_Forest+TotalArea) %>% # Delta forest above/beyond what is lost/gained from agriculture - outside scope of analysis 
+  mutate(delta_Forest_net = delta_Forest+delta_Ag) %>% # Delta forest above/beyond what is lost/gained from agriculture - outside scope of analysis 
   mutate(Model = as.factor(Model)) # To allow cross-validation
-  #filter(CO2_LUC<0)
 
-
-#write_xlsx(delta_AFOLU,"delta_AFOLU.xlsx")
+# For checking data
+#write_xlsx(data_AFOLU,"data_AFOLU.xlsx")
 
 #### 3.0 MODELLING ####
 
 ## 3.1 Preparing dataset and trimming outliers
 
-list_var <- c("delta_Pasture","delta_Cropland","delta_Forest_net","Carbon_price","Year") # Does not consider other land as input to the model
-#list_var <- c("delta_Pasture","delta_Cropland","delta_Other_all","Carbon_price","Year") # Considers all other land remaining as one pool 
+list_var <- c("delta_Cropland","delta_Pasture","Carbon_price","Year") # Does not consider other land as input to the model
 list_par <- paste0("scale(",list_var,")") %>% str_c(collapse = " + ")
-
-#list_par <- paste0(list_par[[i]][[j]]," + C_price_cat") 
 
 # Exploratory plot parameters - allows using existing exploratory plot function
 key_preds <- "delta_Cropland" # Variable names for plotting
@@ -180,48 +141,39 @@ model_specs <- "PB"
 # Trimming outliers and cleaning up
 
 if(trim_outliers=="yes"){ # If yes, residuals are trimmed
-  source("Functions/Trim_outliers.R")
+  source(here("Functions/Trim_outliers.R"))
   stat_df <- trim_residuals(delta_AFOLU,ind,i) %>% data.frame()
+
+}else{
+  stat_df <- delta_AFOLU %>% data.frame()
 }
-
-excluded_models <- c("POLES ADVANCE","POLES CD-LINKS","POLES EMF33",
-                     "POLES ENGAGE","POLES GECO2019","GRAPE-15 1.0",
-                     "IMACLIM-NLU 1.0","COFFEE 1.1","DNE21+ V.14E2")
-                     #"AIM/CGE 2.0","AIM/CGE 2.1","AIM/CGE 2.2",
-                     #"GCAM 4.2","GCAM 5.2","GCAM 5.3") # The Poles models start from a very different base year values for all key parameters and are identified as significant outliers
-
 
 stat_df <- stat_df %>% dplyr::select(any_of(c("Model","Scenario","Year",
                                               ind[[i]],list_var))) %>% 
   drop_na() %>% # Dropping NAs before fitting models
-  filter(Model %notin% excluded_models) %>% 
   mutate(C_price_cat = case_when(Carbon_price>0 ~ "Yes", # Creating a categorical variable for the carbon price since many studies don't apply it at all
                                  TRUE ~ "No"))
 
 # Plotting LUC results by model
 if(diagnostic_plots=="yes"){ # if enables, plots all models/studies, histogram of indicator and relationship between chosen dependent variable and indicator
-  source("Functions/Exploratory_plot_LUC.R")
+  source(here("Functions/Exploratory_plot_LUC.R"))
   exploratory_plots(stat_df,key_preds,key_preds_string,ind,i)
 }
 
-# ggplot(stat_df, aes_string(x = 'delta_Cropland', y = ind[i])) + geom_point() + facet_wrap(~ Model) +
-#   geom_smooth(method=lm)+
-#   ylab("CO2 LUC (Mt/yr")
-
-#write.csv(stat_df,"All_models_LUC.csv") # writing results by model
+ ggplot(stat_df, aes_string(x = list_var[2], y = ind[i])) + geom_point() + facet_wrap(~ Model) +
+   geom_smooth(method=lm)+
+   ylab("CO2 LUC (Mt/yr")
 
 # Establishing that mixed model is better than glm
 m0.glm <- glm(stat_df[,ind[i]] ~ 1, family = gaussian, data = stat_df) # Simple linear model
 m0.lmer <- lmer(stat_df[,ind[i]] ~ 1 + (1|Model), data = stat_df) # Linear mixed model with model/study as intercept
-#m0.lmer <- lmer(stat_df[,ind[i]] ~ 1 + (1+|Model) + (1|Scenario), data = stat_df) # Linear mixed model with model/study as intercept
 AIC(logLik(m0.glm))
 AIC(logLik(m0.lmer))
 
-## 3.2 Fitting models and looking at diagnostics to improve model
+## 3.2 Fitting models and look`ing at diagnostics to improve model
 
 lm_global <- lm(paste0(ind[i]," ~ ",list_par),data=stat_df)#na.action = 'na.exclude') # Simple linear model for comparison
 glmm_global <- lmer(paste0(ind[i]," ~ ",list_par,"+ (1|Model)"),data=stat_df,REML=TRUE)
-#glmm_global <- lmer(paste0(ind[i]," ~ ",list_par,"+ (delta_Cropland+delta_Pasture|Model)"),data=stat_df,REML=TRUE)
 glmm_global_robust <- rlmer(paste0(ind[i]," ~ ",list_par,"+ (1|Model)"),data=stat_df,REML=TRUE)
 
 r.squaredGLMM(glmm_global)
@@ -268,13 +220,12 @@ write.csv(glmm_residuals,paste0("Outputs/Meta-regression/LMM_diagnostics/Residua
 
 ## 3.4 Trimming residuals and refitting model
 
-outlier_cutoff <- 2.5# outlier cutoff - this is better than a priori trimming outliers which biases the result and keeps more sample
+outlier_cutoff <- 3# outlier cutoff - this is better than a priori trimming outliers which biases the result and keeps more sample
 res <- resid(glmm_global, type = "pearson") # Extract standardized residuals
 stat_df[abs(res)>outlier_cutoff,] # Visualise the residuals to be trimmed
 new_data <- romr.fnc(glmm_global, stat_df, trim = outlier_cutoff) # Extreme residuals removed to enable better fit
 stat_df <- new_data$data # New dataset
 glmm_global <- lmer(paste0(ind[i]," ~ ",list_par[[i]][[j]],"+ (1|Model)"),data=stat_df,REML=TRUE)
-glmm_global <- lmer(paste0(ind[i]," ~ ",list_par,"+ (delta_Cropland+delta_Pasture|Model)"),data=stat_df,REML=TRUE)
 
 r.squaredGLMM(glmm_global)
 
@@ -306,24 +257,24 @@ write.csv(glmm_residuals,paste0("Outputs/Meta-regression/LMM_diagnostics/Residua
 
 ## 3.5  Cross-validation of the lmer model - uses custom CV_GLMM function  
 
-source("Functions/CV_GLMM.R")
+source(here("Functions/CV_GLMM.R"))
 CV_lmer_results <- CV_GLMM(stat_df,CV_reps,ind,i) # This will return a table with summary results of repeat cross-validation
-#CV_lmer_results <- CV # In cases with error run manually
 CV_results <- data.frame(CV_lmer_results$RMSE,CV_lmer_results$`NRMSE(RNG)`,CV_lmer_results$AIC,CV_lmer_results$AICc,CV_lmer_results$r2m,CV_lmer_results$r2c)
 write.csv(CV_results,paste0("Outputs/Meta-regression/Cross_validation/CV_results_",ind[i],model_specs[j],effect_size,currentDate,".csv"))
 
-## 3.6  Saving model diagnostics
+## 3.6  Saving models and model diagnostics for prediction and reporting  
 
 # # Additional model diagnostics - Source: https://ourcodingclub.github.io/tutorials/mixed-models/
-source("Functions/Visualise_effects_LUC.R")# source: Additional model diagnostics - Source: https://ourcodingclub.github.io/tutorials/mixed-models/
+source(here("Functions/Visualise_effects_LUC.R"))# source: Additional model diagnostics - Source: https://ourcodingclub.github.io/tutorials/mixed-models/
 
-# Model compared to robust version to show reduced influence of residuals
+# Saving model summaries
+tab_model(glmm_global,glmm_global_robust,show.aic = TRUE,show.aicc = TRUE,
+          file = paste0(here("Outputs/Meta-regression/Model_summaries//"),ind[i],model_specs[j],effect_size,"_",currentDate,".html"))
+
 ## SAVING models for future predictions
 
 saveRDS(glmm_global,paste0("Outputs/Meta-regression/Fitted_models/Models/",ind[i],model_specs[j],effect_size,"_",currentDate,".rds")) # Saving final global model 
 saveRDS(stat_df,paste0("Outputs/Meta-regression/Fitted_models/Datasets/",ind[i],model_specs[j],currentDate,".rds")) # Saving dataset for prediction
-#write.csv(Anova(glmm_global),paste0("GLMMs/ANOVA/Anova",ind[i],model_specs[j],effect_size,currentDate,".csv")) # Significance for fixed effects predictors
-#save.lmer.effects(glmm_global,file=paste0("GLMMs/ANOVA/",ind[i],model_specs[j],currentDate)) # Saving model specifications (includes r-squred for mixed models)
 
 pdf(paste0("Outputs/Meta-regression/LMM_diagnostics/Residuals/",ind[i],model_specs[j],effect_size,"_","QQplotRES.pdf"))
 qqnorm(residuals(glmm_global),main = paste0("GLMMs/Normal Q-Q plot - ",ind[i],model_specs[j]))
@@ -333,6 +284,4 @@ pdf(paste0("Outputs/Meta-regression/LMM_diagnostics/Residuals/",ind[i],model_spe
 plot(glmm_global,main=paste0("GLMMs/",ind[i],model_specs[j], " - residuals"))
 dev.off()
 
-################################################# 4.0 MAKING PREDICTIONS #####################################################
-
-##  See script Final_risk_across_PBs for predictions
+########################################## END ###############################################################################

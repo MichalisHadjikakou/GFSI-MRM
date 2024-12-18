@@ -9,13 +9,3 @@ remove_outliers <- function(x, na.rm = TRUE, ...) {
   y[x > (qnt[2] + H)] <- NA
   y
 }
-
-# # Apply the function to one column
-# dt2 <- dt %>%
-#   group_by(ORD) %>%
-#   mutate(mu = remove_outliers(mu))
-# 
-# # Apply the function to multiple columns
-# dt3 <- dt %>%
-#   group_by(ORD) %>%
-#   mutate_at(vars(mu, abs), funs(remove_outliers))

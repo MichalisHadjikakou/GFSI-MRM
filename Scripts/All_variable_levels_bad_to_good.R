@@ -3,7 +3,6 @@
 ############################################################
 
 # Author: Michalis Hadjikakou, Deakin University (m.hadjikakou@deakin.edu.au)
-# Last updated: 19 May 2022
 # Purpose: Re-arranging predictors from bad to good
 
 

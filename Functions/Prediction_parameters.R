@@ -3,7 +3,6 @@
 ##################################################
 
 # Author: Michalis Hadjikakou, Deakin University (m.hadjikakou@deakin.edu.au)
-# Last updated: 26 April 2022
 # Purpose: Generate synthetic dataset for predictions across all indicators
 
 Pred_data_indicator <- function(Pred_data,i){
@@ -22,11 +21,11 @@ Pred_data_indicator <- function(Pred_data,i){
     
     pred_list <-  c(pred_list,"GHG","Organic")
     
-  } else if (i==6|i==7){ # Biogeochemical flows 
+  } else if (i==6){ # Biogeochemical flows 
     
     pred_list <-  c(pred_list,"Nitrogen")#"Organic")
     
-  } else if (i==8|i==9){ # Biogeochemical flows 
+  } else if (i==7){ # Biogeochemical flows 
     
     pred_list <-  c(pred_list,"Phosphorus")#,"Organic")
     
@@ -39,7 +38,7 @@ Pred_data_indicator <- function(Pred_data,i){
     unlist()
   
   
-## Starting weights (2010) for different livestock/feed classes - population not multiplier through since it's the same number across all livestock/feed classes
+## Starting weights (2010) based on physical quantities (source: FAOSTAT) for different livestock/feed classes - population not multiplier through since it's the same number across all livestock/feed classes
   
   # Constants
   Rum_meat_conv = 0.784* 1532.004197 + (1-0.784) * 2124.338624 # Ruminant meat conversion factor assumes 0.784 share for beef vs. lamb (see FAOSTAT FBS 2010 Old methodology)
@@ -60,6 +59,9 @@ Pred_data_indicator <- function(Pred_data,i){
   All_feed_crop_tw <- Rum_meat_crop_w + Dairy_crop_w + Mon_crop_w
   
   # Combined (crops + grass)
+  All_mon_feed_tw  <- Mon_crop_w + 244*1/Mon_conv*4*0.2
+  All_dairy_feed_tw <- Dairy_grass_w + Dairy_crop_w
+  Non_rum_dairy_feed_tw <- All_mon_feed_tw + All_dairy_feed_tw
   All_rum_feed_tw <- Rum_feed_crop_tw + Rum_feed_grass_tw
   
   # Binding everything together in one single prediction dataframe
@@ -76,18 +78,20 @@ Pred_data_indicator <- function(Pred_data,i){
            Dairy_grass_feed = ((Population+1)*(Dairy_kcal+1)*(FCR_grass_dairy+1))-1,
            Mon_grass_feed = ((Population+1)*(Non_rum_kcal+1)*(FCR_grass_monogastrics+1))-1,
            Rum_feed_grass = (Rum_meat_grass_feed*Rum_meat_perc) + (Dairy_grass_feed*Dairy_perc)) %>% 
-    dplyr::mutate(Rum_meat_crop_feed_water = ((Population+1)*(Rum_meat_kcal+1)*(FCR_FCF_rum_meat+1))-1, # Composite variable with FCR+FCF
-           Dairy_crop_feed_water = ((Population+1)*(Dairy_kcal+1)*(FCR_FCF_dairy+1))-1,
-           Rum_feed_water = (Rum_meat_crop_feed_water*Rum_meat_crop_w/Rum_feed_crop_tw) + (Dairy_crop_feed_water*Dairy_crop_w/Rum_feed_crop_tw), # Weighted to reflect higher demands for ruminant meat
-           Mon_feed_water = ((Population+1)*(Non_rum_kcal+1)*(FCR_FCF_monogastrics+1))-1,
-           All_feed_water = (Rum_meat_crop_feed_water*Rum_meat_crop_w/All_feed_crop_tw) + 
-             (Dairy_crop_feed_water*Dairy_crop_w/All_feed_crop_tw) + 
-             (Mon_feed_water*Mon_crop_w/All_feed_crop_tw),# Weighted to reflect higher demands for ruminant meat
-           Rum_feed_all = Rum_feed_grass*Rum_feed_grass_tw/All_rum_feed_tw + Rum_feed_water*Rum_feed_crop_tw/All_rum_feed_tw,
-           Plant_food_water =((Population+1)*(Vegetal_kcal+1))-1) %>% 
+    dplyr::mutate(Rum_meat_crop_feed = ((Population+1)*(Rum_meat_kcal+1)*(FCR_FCF_rum_meat+1))-1, # Composite variable with FCR+FCF
+           Dairy_crop_feed = ((Population+1)*(Dairy_kcal+1)*(FCR_FCF_dairy+1))-1,
+           Rum_crop_feed = (Rum_meat_crop_feed*Rum_meat_crop_w/Rum_feed_crop_tw) + (Dairy_crop_feed*Dairy_crop_w/Rum_feed_crop_tw), # Weighted to reflect higher demands for ruminant meat
+           Mon_crop_feed = ((Population+1)*(Non_rum_kcal+1)*(FCR_FCF_monogastrics+1))-1,
+           All_crop_feed = (Rum_meat_crop_feed*Rum_meat_crop_w/All_feed_crop_tw) + 
+             (Dairy_crop_feed*Dairy_crop_w/All_feed_crop_tw) + 
+             (Mon_crop_feed*Mon_crop_w/All_feed_crop_tw),# Weighted to reflect higher demands for ruminant meat
+           Rum_feed_all = Rum_feed_grass*Rum_feed_grass_tw/All_rum_feed_tw + Rum_crop_feed*Rum_feed_crop_tw/All_rum_feed_tw,
+           All_plant_food =((Population+1)*(Vegetal_kcal+1))-1) %>% 
     dplyr::mutate(Rum_meat_kcal_GHG = ((Population+1)*(Rum_meat_kcal+1)*(FCR_rum_meat+1))-1, # Composite variable with FCR+FCF
            Dairy_kcal_GHG = ((Population+1)*(Dairy_kcal+1)*(FCR_dairy+1))-1,
            Non_rum_kcal_GHG = ((Population+1)*(Non_rum_kcal+1)*(FCR_monogastrics+1))-1,
+           Non_rum_dairy_kcal_GHG = (Dairy_kcal_GHG*All_dairy_feed_tw/Non_rum_dairy_feed_tw) + 
+             (Non_rum_kcal_GHG*All_mon_feed_tw/Non_rum_dairy_feed_tw),
            Plant_kcal_GHG =((Population+1)*(Vegetal_kcal+1))-1)
   
   return(df_pred)

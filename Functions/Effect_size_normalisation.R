@@ -3,7 +3,6 @@
 ##################################################
 
 # Author: Michalis Hadjikakou, Deakin University (m.hadjikakou@deakin.edu.au)
-# Last updated: 29 March 2022
 # Purpose: Effect size calculation 
 
 ES_metric <- function(ind,stat_df,effect_size,sel_pred){
@@ -35,12 +34,8 @@ ES_metric <- function(ind,stat_df,effect_size,sel_pred){
       arrange(Study,ScenYear) %>% 
       group_by(Study) %>% #Arrange by BAU first etc
       mutate_at(c(ind[[i]],sel_pred), funs(c(first(.), (. / first(.))[-1]-1)) )%>% # Calculate difference from base year across columns
-      slice(-1) %>%# Remove first row (base year) of every group
-      #dplyr::mutate(across(Rum_kcal_FCR_FCF:Dairy_kcal_FCR_FCF, ~replace_na(.x, -1))) %>% # Change depending on model
-      #dplyr::mutate(across(Rum_meat_crop_feed:Plant_food, ~replace_na(.x, -1))) %>% 
+      slice(-1) %>%
       dplyr::mutate(across(c(sel_pred), ~replace_na(.x, -1))) %>%
-      #dplyr::mutate(across(Rum_meat_grass_feed:Dairy_grass_feed, ~replace_na(.x, -1))) %>%
-      #dplyr::mutate(Aqua_kcal = ifelse(is.infinite(Aqua_kcal), 1, replace_na(Aqua_kcal, 1))) %>% 
       data.frame()
     
   }

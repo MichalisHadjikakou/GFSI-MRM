@@ -1,0 +1,38 @@
+Model,Included,Comment
+AIM/CGE 2.0,N,Exhibits unusual relationships
+AIM/CGE 2.1,N,Exhibits unusual relationships
+AIM/CGE 2.2,N,Exhibits unusual relationships
+AIM/Hub-Global 2.0,N,Exhibits unusual relationships
+COFFEE 1.1,N,Incompatible base year values
+EPPA 6,N,No land use variables
+GCAM 4.2,N,Exhibits unusual relationships
+GCAM 5.2,N,Too few scenario runs
+GCAM 5.3,N,Incompatible base year values
+GCAM-PR 5.3,Y,
+IMAGE 3.0,Y,
+IMAGE 3.0.1,Y,
+IMAGE 3.0.2,Y,
+IMAGE 3.2,Y,
+MESSAGE-GLOBIOM 1.0,Y,
+MESSAGEix-GLOBIOM 1.0,N,Too few scenario runs
+MESSAGEix-GLOBIOM_1.0,Y,
+MESSAGEix-GLOBIOM_1.1,Y,
+MESSAGEix-GLOBIOM_1.2,Y,
+MESSAGEix-GLOBIOM_GEI 1.0,Y,
+REMIND-MAgPIE 1.5,N,
+REMIND-MAgPIE 1.7-3.0,N,
+REMIND-MAgPIE 2.0-4.1,N,
+REMIND-MAgPIE 2.1-4.2,N,Exhibits unusual relationships
+REMIND-MAgPIE 2.1-4.3,Y,
+WITCH-GLOBIOM 3.1,Y,
+WITCH-GLOBIOM 4.2,Y,
+WITCH-GLOBIOM 4.4,N,Incompatible base year values
+MERGE-ETL 6.0,N,Incompatible base year values
+POLES ADVANCE,N,Incompatible base year values
+POLES CD-LINKS,N,Incompatible base year values
+POLES EMF30,N,Incompatible base year values
+POLES EMF33,N,Incompatible base year values
+POLES ENGAGE,N,Incompatible base year values
+POLES GECO2019,N,Incompatible base year values
+WITCH 4.6,N,Incompatible base year values
+WITCH 5.0,N,Incompatible base year values
