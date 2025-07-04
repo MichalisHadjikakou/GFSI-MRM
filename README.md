@@ -5,11 +5,11 @@
 
 ## Abstract
 
-Transforming the global food system is necessary to avoid exceeding the Earth’s environmental limits. A robust evidence base is crucial to assess the scale and combination of interventions required for a sustainable transformation. We developed a risk assessment framework, underpinned by an evidence synthesis of global food system modeling studies, to quantify the potential of individual and combined interventions to mitigate the risk of exceeding global environmental limits for agricultural area, greenhouse gas (GHG) emissions, surface water flows, and nutrient cycles by 2050. GHG emissions and nutrient cycles are the most difficult thresholds to avoid exceeding, and are conditional on shifts towards diets with a low proportion of animal-source foods, steep reductions in emissions intensity, substantial improvements in nutrient management, feed conversion ratios and crop yields, and efforts to limit overconsumption and food waste. Ambitious actions across the global food system are required to ensure the required level of risk mitigation.
+Transforming the global food system is essential to avoid exceeding Earth’s environmental limits. A robust evidence base is crucial to assess the scale and combination of interventions required for a sustainable transformation. We developed a risk assessment framework, underpinned by an evidence synthesis of global food system modeling studies, to quantify the potential of individual and combined interventions to mitigate the risk of exceeding global environmental limits for agricultural area, greenhouse gas (GHG) emissions, surface water flows, and nutrient cycles by 2050. GHG emissions and nutrient cycles are the most difficult limits to avoid exceeding and are conditional on shifts toward diets with a low proportion of animal-source foods; steep reductions in emissions intensity; substantial improvements in nutrient management, feed-conversion ratios, and crop yields; and efforts to limit overconsumption and food waste. Ambitious actions across the global food system are needed to ensure the required level of risk mitigation.
 
 ## Description
 
-This repository provides the underlying code to reproduce the analysis published in **_ Hadjikakou et al. (2025) Ambitious food system interventions required to mitigate the risk of exceeding Earth’s environmental limits_**, _One Earth_, DOI: https://doi.org/10.1016/j.oneear.2025.101351.
+This repository provides the underlying code to reproduce the analysis published in **Hadjikakou et al. (2025) Ambitious food system interventions required to mitigate the risk of exceeding Earth’s environmental limits**, _One Earth_, DOI: https://doi.org/10.1016/j.oneear.2025.101351.
 
 ## Getting Started
 
