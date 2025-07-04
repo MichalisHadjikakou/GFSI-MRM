@@ -9,7 +9,7 @@ Transforming the global food system is necessary to avoid exceeding the Earth’
 
 ## Description
 
-This repository provides the underlying code to reproduce the analysis for the manuscript titled **_Ambitious food system interventions required to mitigate the risk of exceeding Earth’s environmental limits_**, submitted. A [pre-print](https://doi.org/10.31223/X50H2B) of the manuscript is available from _EarthArXiv_ (DOI: https://doi.org/10.31223/X50H2B).
+This repository provides the underlying code to reproduce the analysis published in **_ Hadjikakou et al. (2025) Ambitious food system interventions required to mitigate the risk of exceeding Earth’s environmental limits_**, _One Earth_, DOI: https://doi.org/10.1016/j.oneear.2025.101351.
 
 ## Getting Started
 
